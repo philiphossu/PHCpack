@@ -886,6 +886,11 @@ mixedVolumeSymmetryTest = method()
 mixedVolumeSymmetryTest List := system -> (
   -- Start by loading FindSymmetries.m2 (use absolute path to it)
   -- I := ideal system;
+  -- After creating an ideal from the system, you can call R = ring(I)
+  -- gens R will return a list of variables (generators) used in the system
+  -- Their positions are significant, then when findSymmetry returns, you can
+  -- Know that the variables in those positions are the ones being swapped
+
   -- SymmetricGroupGens := FindSymmetry I;
   -- PHCpack requires variable names for symmetry input. HOWEVER, FindSymmetry
   -- outputs lists of lists of lists of integers. Need to convert!
@@ -893,6 +898,7 @@ mixedVolumeSymmetryTest List := system -> (
   -- Emulate mixedVolume function. Call phc -m with symmetric lifting.
   -- Use option 3.
   -- After you input the generators, just say no to all options.
+
 )
 
 mixedVolume = method(Options => {StableMixedVolume => false, StartSystem => false, Verbose => false, numThreads => 0, interactive=>false})
