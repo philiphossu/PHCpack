@@ -890,17 +890,29 @@ mixedVolumeSymmetryTest List := system -> (
   -- gens R will return a list of variables (generators) used in the system
   -- Their positions are significant, then when findSymmetry returns, you can
   -- Know that the variables in those positions are the ones being swapped
-  -- Use a new mutable hash table to store the values from this list
-  -- For loop to put them all in using x#i = vars_i if x = hashtable and vars = gens(R)
 
   -- SymmetricGroupGens := FindSymmetry I;
-  -- Figure out the form that FindSymmetry returns. Array/List? String? 
+  -- Figure out the form that FindSymmetry returns. Array/List? String?
   -- PHCpack requires variable names for symmetry input. HOWEVER, FindSymmetry
   -- outputs lists of lists of lists of integers. Need to convert!
 
   -- Emulate mixedVolume function. Call phc -m with symmetric lifting.
   -- Use option 3.
   -- After you input the generators, just say no to all options.
+
+  -- ========================================================================
+
+  load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/IdealSymmetries/FindSymmetries.m2";
+  -- Note: In FindSymmetries.m2, I had to modify line 1 for this load to work
+  -- FindSymmetries.m2 new line 1: load "./SymmetricGroupUtils.m2"
+
+  I := ideal(system);
+  R := ring(I);
+  vars := gens(R);
+  -- vars_0 is variable 1, vars_1 is variable 2, etc.
+
+  symGroupGens := findSymmetry(I);
+
 
 )
 
