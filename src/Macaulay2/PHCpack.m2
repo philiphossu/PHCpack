@@ -890,8 +890,11 @@ mixedVolumeSymmetryTest List := system -> (
   -- gens R will return a list of variables (generators) used in the system
   -- Their positions are significant, then when findSymmetry returns, you can
   -- Know that the variables in those positions are the ones being swapped
+  -- Use a new mutable hash table to store the values from this list
+  -- For loop to put them all in using x#i = vars_i if x = hashtable and vars = gens(R)
 
   -- SymmetricGroupGens := FindSymmetry I;
+  -- Figure out the form that FindSymmetry returns. Array/List? String? 
   -- PHCpack requires variable names for symmetry input. HOWEVER, FindSymmetry
   -- outputs lists of lists of lists of integers. Need to convert!
 
