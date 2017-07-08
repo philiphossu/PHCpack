@@ -928,8 +928,23 @@ mixedVolumeSymmetryTest List := system -> (
   sesfile := filename|"PHCsession";
   startfile := filename|"PHCstart";
 
+  -- First, the number of equations (N) and the equations themselves must be written to the PHCinput file
+  -- Then, all subsequent commands must be written into the cmdfile
+
+  -- PHCinput file
+
+  -- PHCcommands file
   file := openOut cmdfile;
   file << "n" << endl << N << endl;
+
+  for a in symGroupGens do(
+    -- print(a);
+    for b in a do(
+      -- print(b);
+      print(vars_b);
+      -- These are the variables which need to be written to the file for the symmetry
+    );
+  );
 
   close file;
   systemToFile(system,infile);
