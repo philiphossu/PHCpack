@@ -892,7 +892,7 @@ mixedVolumeSymmetryTest List := system -> (
   -- Know that the variables in those positions are the ones being swapped
 
   -- SymmetricGroupGens := FindSymmetry I;
-  -- Figure out the form that FindSymmetry returns. Array/List? String?
+  -- Figure out the form that FindSymmetry returns. List Output.
   -- PHCpack requires variable names for symmetry input. HOWEVER, FindSymmetry
   -- outputs lists of lists of lists of integers. Need to convert!
 
@@ -903,16 +903,32 @@ mixedVolumeSymmetryTest List := system -> (
   -- ========================================================================
 
   load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/IdealSymmetries/FindSymmetries.m2";
-  -- Note: In FindSymmetries.m2, I had to modify line 1 for this load to work
-  -- FindSymmetries.m2 new line 1: load "./SymmetricGroupUtils.m2"
+  -- Note: In FindSymmetries.m2, I had to modify line 1 for this load to work. New line 1: load "./SymmetricGroupUtils.m2"
 
-  I := ideal(system);
-  R := ring(I);
+  R := ring(ideal(system));
   vars := gens(R);
   -- vars_0 is variable 1, vars_1 is variable 2, etc.
-
+  N := #system;
   symGroupGens := findSymmetry(I);
 
+  -- Pre-checks to see if phc -m should be called
+  if N < numgens R then
+    error "The system is underdetermined";
+
+  if N > numgens R then
+    error "The system is overdetermined";
+
+  if not(class coefficientRing R===ComplexField) then
+    error "Coefficient ring is not complex";
+
+  filename = getFilename();
+  cmdfile := filename|"PHCcommands";
+  file := openOut cmdfile;
+
+  file << "n" << endl << N << endl;
+
+  close file;
+  systemToFile(system,infile);
 
 )
 
