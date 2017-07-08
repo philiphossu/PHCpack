@@ -907,7 +907,7 @@ mixedVolumeSymmetryTest List := system -> (
 
   R := ring(ideal(system));
   vars := gens(R);
-  -- vars_0 is variable 1, vars_1 is variable 2, etc.
+  -- vars_0 is variable 1 in the system, vars_1 is variable 2, etc.
   N := #system;
   symGroupGens := findSymmetry(I);
 
@@ -918,17 +918,28 @@ mixedVolumeSymmetryTest List := system -> (
   if N > numgens R then
     error "The system is overdetermined";
 
-  if not(class coefficientRing R===ComplexField) then
+  if not(class coefficientRing R === ComplexField) then
     error "Coefficient ring is not complex";
 
   filename = getFilename();
+  infile := filename|"PHCinput";
+  outfile := filename|"PHCoutput";
   cmdfile := filename|"PHCcommands";
-  file := openOut cmdfile;
+  sesfile := filename|"PHCsession";
+  startfile := filename|"PHCstart";
 
+  file := openOut cmdfile;
   file << "n" << endl << N << endl;
 
   close file;
   systemToFile(system,infile);
+
+  execstr := PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
+  ret := run(execstr);
+  if ret =!= 0 then
+    error "error occurred while executing PHCpack command: phc -m";
+  );
+  F := get outfile;
 
 )
 
