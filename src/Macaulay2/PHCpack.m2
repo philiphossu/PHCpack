@@ -928,31 +928,53 @@ mixedVolumeSymmetryTest List := system -> (
   sesfile := filename|"PHCsession";
   startfile := filename|"PHCstart";
 
-  -- First, the number of equations (N) and the equations themselves must be written to the PHCinput file
+  -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
 
-  -- PHCinput file
+  -- Writing & Setup: PHCinput file
+  systemToFile(system,infile);
 
-  -- PHCcommands file
+  -- Writing & Setup: PHCcommands file
   file := openOut cmdfile;
-  file << "n" << endl << N << endl;
-
+  -- Menu for lifting strategies
+  file << "3" <<endl;
+  -- Option for full permutation group
+  file << "n" << endl;
+  -- Data for number of generating elements
+  file << #symGroupGens << endl;
+  -- Data for n vector representations of generating elements
   for a in symGroupGens do(
     -- print(a);
     for b in a do(
       -- print(b);
-      print(vars_b);
+      file << (vars_b) << endl;
       -- These are the variables which need to be written to the file for the symmetry
     );
   );
+  -- Option for generation of the group
+  file << "n" << endl;
+  -- Option for sign symmetry to be taken into account
+  file << "n" << endl;
+  -- Option for already having a mixed subdivision
+  file << "n" << endl;
+  -- Option for enforcing the type of mixture
+  file << "n" << endl;
+  -- Option for having the subdivision on a separate file
+  file << "n" << endl;
+  -- Menu for lifting orbits
+  file << "3" << endl;
+  -- Data for lower bound for random lifting
+  file << "2" << endl;
+  -- Data for upper bound for random lifting
+  file << "5" << endl;
 
   close file;
-  systemToFile(system,infile);
+
 
   execstr := PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
   ret := run(execstr);
   if ret =!= 0 then
-    error "error occurred while executing PHCpack command: phc -m";
+    error "Error occurred while executing PHCpack command: phc -m";
   );
   F := get outfile;
 
