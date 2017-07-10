@@ -967,10 +967,18 @@ mixedVolumeSymmetryTest List := system -> (
   file << "2" << endl;
   -- Data for upper bound for random lifting
   file << "5" << endl;
+  -- Menu for symmetric polyhedral continuation
+  file << "1" << endl;
+  -- Data for string of characters to write the start solutions on
+  file << startfile << endl;
+  -- Data for type a numbre to change or 0 to edit
+  file << "0" << endl;
+  -- Menu for output information during continuation
+  file << "0" << endl;
 
   close file;
 
-
+  -- Execution
   execstr := PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
   ret := run(execstr);
   if ret =!= 0 then
