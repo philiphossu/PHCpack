@@ -71,6 +71,7 @@ export {
   "isWitnessSetMember",
   "loadSettingsPath",
   "mixedVolume",
+  "mixedVolumeSymmetryTest",
   "nonZeroFilter",
   "numericalIrreducibleDecomposition",
   "numThreads",
@@ -882,6 +883,8 @@ isWitnessSetMember (WitnessSet,Point) := o-> (witset,testpoint) -> (
 -- MIXED VOLUME --
 ------------------
 
+load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/IdealSymmetries/FindSymmetries.m2";
+
 mixedVolumeSymmetryTest = method()
 mixedVolumeSymmetryTest List := system -> (
   -- Start by loading FindSymmetries.m2 (use absolute path to it)
@@ -902,14 +905,14 @@ mixedVolumeSymmetryTest List := system -> (
 
   -- ========================================================================
 
-  load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/IdealSymmetries/FindSymmetries.m2";
+
   -- Note: In FindSymmetries.m2, I had to modify line 1 for this load to work. New line 1: load "./SymmetricGroupUtils.m2"
 
   R := ring(ideal(system));
   vars := gens(R);
   -- vars_0 is variable 1 in the system, vars_1 is variable 2, etc.
   N := #system;
-  symGroupGens := findSymmetry(I);
+  symGroupGens := findSymmetry(ideal(system));
 
   -- Pre-checks to see if phc -m should be called
   if N < numgens R then
@@ -921,7 +924,7 @@ mixedVolumeSymmetryTest List := system -> (
   if not(class coefficientRing R === ComplexField) then
     error "Coefficient ring is not complex";
 
-  filename = getFilename();
+  filename := getFilename();
   infile := filename|"PHCinput";
   outfile := filename|"PHCoutput";
   cmdfile := filename|"PHCcommands";
@@ -930,9 +933,6 @@ mixedVolumeSymmetryTest List := system -> (
 
   -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
-
-  -- Writing & Setup: PHCinput file
-  systemToFile(system,infile);
 
   -- Writing & Setup: PHCcommands file
   file := openOut cmdfile;
@@ -978,12 +978,14 @@ mixedVolumeSymmetryTest List := system -> (
 
   close file;
 
+  -- Writing & Setup: PHCinput file
+  systemToFile(system,infile);
+
   -- Execution
   execstr := PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
   ret := run(execstr);
   if ret =!= 0 then
     error "Error occurred while executing PHCpack command: phc -m";
-  );
   F := get outfile;
 
 )
