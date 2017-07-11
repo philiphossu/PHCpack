@@ -884,6 +884,7 @@ isWitnessSetMember (WitnessSet,Point) := o-> (witset,testpoint) -> (
 ------------------
 
 load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/IdealSymmetries/FindSymmetries.m2";
+--load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/IdealSymmetries/experiments.m2";
 
 mixedVolumeSymmetryTest = method()
 mixedVolumeSymmetryTest List := system -> (
@@ -962,16 +963,16 @@ mixedVolumeSymmetryTest List := system -> (
   -- Option for having the subdivision on a separate file
   file << "n" << endl;
   -- Menu for lifting orbits
-  file << "3" << endl;
-  -- Data for lower bound for random lifting
-  file << "2" << endl;
-  -- Data for upper bound for random lifting
-  file << "5" << endl;
-  -- Menu for symmetric polyhedral continuation
   file << "1" << endl;
+  -- Data for lower bound for random lifting
+  file << "-100" << endl;
+  -- Data for upper bound for random lifting
+  file << "100" << endl;
+  -- Menu for symmetric polyhedral continuation
+  file << "2" << endl;
   -- Data for string of characters to write the start solutions on
   file << startfile << endl;
-  -- Data for type a numbre to change or 0 to edit
+  -- Data for type a number to change or 0 to edit
   file << "0" << endl;
   -- Menu for output information during continuation
   file << "0" << endl;
