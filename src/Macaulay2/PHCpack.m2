@@ -984,13 +984,7 @@ mixedVolumeSymmetryTest List := system -> (
   file << "1" << endl;
   -- Data for string of characters to write the start solutions on (OPTION 2 CAUSES PROBLEMS)
   file << startfile << endl;
-  -- Data for type a number to change or 0 to exit
-  file << "0" << endl;
-  -- Menu for output information during continuation
-  file << "0" << endl;
 
-  -- NOTE: some of these lines can be consolidated with selector == 0 and selector == 4 once the start solutions writing is figured out.
-  -- Specifically, the last 2 options for each can be moved out of the "ifs" since they must be written to the commands in all options
   );
 
   if(methodSelector == 0) then(
@@ -1014,10 +1008,6 @@ mixedVolumeSymmetryTest List := system -> (
   file << "2" << endl;
   -- Data for string of characters to write start solutions on (Option 2 somehow does not seem to cause problems here??)
   file << startfile << endl;
-  -- Data for type a number to change or 0 to exit
-  file << "0" << endl;
-  -- Menu for output information during continuation
-  file << "0" << endl;
 
   );
 
@@ -1032,12 +1022,15 @@ mixedVolumeSymmetryTest List := system -> (
     file << "n" << endl;
     -- Data for reading the name of file for writing start system
     file << startfile << endl;
-    -- Data for typing a number to change or 0 to exit
-    file << "0" << endl;
-    -- Menu for output information during continuation
-    file << "0" << endl;
 
   );
+
+  -- Following 2 options must be written regardless of the option
+
+  -- Data for type a number to change or 0 to exit
+  file << "0" << endl;
+  -- Menu for output information during continuation
+  file << "0" << endl;
 
   close file;
 
