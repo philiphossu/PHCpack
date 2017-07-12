@@ -936,7 +936,7 @@ mixedVolumeSymmetryTest List := system -> (
   -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
 
-  methodSelector := 0;
+  methodSelector := 4;
   groupSelector := 0;
 
   -- Writing & Setup: PHCcommands file
@@ -984,12 +984,13 @@ mixedVolumeSymmetryTest List := system -> (
   file << "1" << endl;
   -- Data for string of characters to write the start solutions on (OPTION 2 CAUSES PROBLEMS)
   file << startfile << endl;
-  -- Data for type a number to change or 0 to edit
+  -- Data for type a number to change or 0 to exit
   file << "0" << endl;
   -- Menu for output information during continuation
   file << "0" << endl;
 
-  -- NOTE: some of these lines can be consolidated with selector == 0 once the start solutions writing is figured out
+  -- NOTE: some of these lines can be consolidated with selector == 0 and selector == 4 once the start solutions writing is figured out.
+  -- Specifically, the last 2 options for each can be moved out of the "ifs" since they must be written to the commands in all options
   );
 
   if(methodSelector == 0) then(
@@ -1013,10 +1014,28 @@ mixedVolumeSymmetryTest List := system -> (
   file << "2" << endl;
   -- Data for string of characters to write start solutions on (Option 2 somehow does not seem to cause problems here??)
   file << startfile << endl;
-  -- Data for type a number to change or 0 to edit
+  -- Data for type a number to change or 0 to exit
   file << "0" << endl;
   -- Menu for output information during continuation
   file << "0" << endl;
+
+  );
+
+  if(methodSelector == 4) then(
+    -- Menu for lifting strategies
+    file << "4" << endl;
+    -- Menu for precision of coefficient system
+    file << "1" << endl;
+    -- Option for stable mixed volumes
+    file << "n" << endl;
+    -- Option for mixed cell config on a separate file
+    file << "n" << endl;
+    -- Data for reading the name of file for writing start system
+    file << startfile << endl;
+    -- Data for typing a number to change or 0 to exit
+    file << "0" << endl;
+    -- Menu for output information during continuation
+    file << "0" << endl;
 
   );
 
