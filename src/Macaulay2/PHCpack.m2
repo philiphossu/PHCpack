@@ -931,12 +931,18 @@ mixedVolumeSymmetryTest List := system -> (
   cmdfile := filename|"PHCcommands";
   sesfile := filename|"PHCsession";
   startfile := filename|"PHCstart";
+  --startsysfile := filename|"Poly-StartSys-Test";
 
   -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
 
+  selector = 3;
+
   -- Writing & Setup: PHCcommands file
   file := openOut cmdfile;
+
+
+  if(selector == 3) then (
   -- Menu for lifting strategies
   file << "3" <<endl;
   -- Option for full permutation group
@@ -958,7 +964,7 @@ mixedVolumeSymmetryTest List := system -> (
   file << "n" << endl;
   -- Option for already having a mixed subdivision
   file << "n" << endl;
-  -- Option for enforcing the type of mixture
+  -- Option for enforcing the type mixture
   file << "n" << endl;
   -- Option for having the subdivision on a separate file
   file << "n" << endl;
@@ -969,13 +975,44 @@ mixedVolumeSymmetryTest List := system -> (
   -- Data for upper bound for random lifting
   file << "100" << endl;
   -- Menu for symmetric polyhedral continuation
-  file << "2" << endl;
-  -- Data for string of characters to write the start solutions on
+  file << "1" << endl;
+  -- Data for string of characters to write the start solutions on (OPTION 2 CAUSES PROBLEMS)
   file << startfile << endl;
   -- Data for type a number to change or 0 to edit
   file << "0" << endl;
   -- Menu for output information during continuation
   file << "0" << endl;
+
+  -- NOTE: some of these lines can be consolidated with selector == 0 once the start solutions writing is figured out
+  )
+
+  if(selector == 0) then(
+  -- Menu for lifting strategies
+  file << "0" << endl;
+  -- Option for having a mixed subdivision
+  file << "n" << endl;
+  -- Option for enforcing a type mixture
+  file << "n" << endl;
+  -- Menu for removing non-contributing points
+  file << "0" << endl;
+  -- Menu for lifting functions
+  file << "0" << endl;
+  -- Option for changing default floating point to integer
+  file << "n" << endl;
+  -- Option for changing current lower + upper bounds on lifting values
+  file << "n" << endl;
+  -- Option for having mixed cells on a separate file
+  file << "n" << endl;
+  -- Menu for polyhedral continuation
+  file << "2" << endl;
+  -- Data for string of characters to write start solutions on (OPTION 2 MAY CAUSE PROBLEMS, MUST TEST)
+  file << startfile << endl;
+  -- Data for type a number to change or 0 to edit
+  file << "0" << endl;
+  -- Menu for output information during continuation
+  file << "0" << endl;
+
+  )
 
   close file;
 
