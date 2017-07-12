@@ -936,15 +936,17 @@ mixedVolumeSymmetryTest List := system -> (
   -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
 
-  selector = 3;
+  methodSelector := 0;
+  groupSelector := 0;
 
   -- Writing & Setup: PHCcommands file
   file := openOut cmdfile;
 
 
-  if(selector == 3) then (
+  if(methodSelector == 3) then (
   -- Menu for lifting strategies
   file << "3" <<endl;
+  if(groupSelector == 0) then(
   -- Option for full permutation group
   file << "n" << endl;
   -- Data for number of generating elements
@@ -957,6 +959,10 @@ mixedVolumeSymmetryTest List := system -> (
       file << (vars_b) << endl;
       -- These are the variables which need to be written to the file for the symmetry
     );
+  );
+  )
+  else(
+  file << "y" << endl;
   );
   -- Option for generation of the group
   file << "n" << endl;
@@ -984,9 +990,9 @@ mixedVolumeSymmetryTest List := system -> (
   file << "0" << endl;
 
   -- NOTE: some of these lines can be consolidated with selector == 0 once the start solutions writing is figured out
-  )
+  );
 
-  if(selector == 0) then(
+  if(methodSelector == 0) then(
   -- Menu for lifting strategies
   file << "0" << endl;
   -- Option for having a mixed subdivision
@@ -1005,14 +1011,14 @@ mixedVolumeSymmetryTest List := system -> (
   file << "n" << endl;
   -- Menu for polyhedral continuation
   file << "2" << endl;
-  -- Data for string of characters to write start solutions on (OPTION 2 MAY CAUSE PROBLEMS, MUST TEST)
+  -- Data for string of characters to write start solutions on (Option 2 somehow does not seem to cause problems here??)
   file << startfile << endl;
   -- Data for type a number to change or 0 to edit
   file << "0" << endl;
   -- Menu for output information during continuation
   file << "0" << endl;
 
-  )
+  );
 
   close file;
 
