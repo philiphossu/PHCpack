@@ -888,26 +888,15 @@ load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/Idea
 
 mixedVolumeSymmetryTest = method()
 mixedVolumeSymmetryTest List := system -> (
-  -- Start by loading FindSymmetries.m2 (use absolute path to it)
-  -- I := ideal system;
-  -- After creating an ideal from the system, you can call R = ring(I)
-  -- gens R will return a list of variables (generators) used in the system
-  -- Their positions are significant, then when findSymmetry returns, you can
-  -- Know that the variables in those positions are the ones being swapped
 
-  -- SymmetricGroupGens := FindSymmetry I;
-  -- Figure out the form that FindSymmetry returns. List Output.
-  -- PHCpack requires variable names for symmetry input. HOWEVER, FindSymmetry
-  -- outputs lists of lists of lists of integers. Need to convert!
+  -- Current issues:
+    -- (1) In methodSelector = 3, Option 2 for Polyhedral Continuation causes hanging problem which needs to be investigated...
+    -- ...could be related to the startFile? But option 2 appears to have no negative effects in methodSelector = 0 (or = 4)
+    -- (2) Potential problem with phc -m full permutation group option
 
-  -- Emulate mixedVolume function. Call phc -m with symmetric lifting.
-  -- Use option 3.
-  -- After you input the generators, just say no to all options.
+    -- Note: In FindSymmetries.m2, I had to modify line 1 for this load to work. New line 1: load "./SymmetricGroupUtils.m2"
 
   -- ========================================================================
-
-
-  -- Note: In FindSymmetries.m2, I had to modify line 1 for this load to work. New line 1: load "./SymmetricGroupUtils.m2"
 
   R := ring(ideal(system));
   vars := gens(R);
@@ -936,12 +925,11 @@ mixedVolumeSymmetryTest List := system -> (
   -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
 
-  methodSelector := 4;
+  methodSelector := 3;
   groupSelector := 0;
 
   -- Writing & Setup: PHCcommands file
   file := openOut cmdfile;
-
 
   if(methodSelector == 3) then (
   -- Menu for lifting strategies
