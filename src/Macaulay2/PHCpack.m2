@@ -889,10 +889,13 @@ load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/Idea
 mixedVolumeSymmetryTest = method()
 mixedVolumeSymmetryTest List := system -> (
 
-  -- Current issues:
-    -- (1) In methodSelector = 3, Option 2 for Polyhedral Continuation causes hanging problem which needs to be investigated...
-    -- ...could be related to the startFile? But option 2 appears to have no negative effects in methodSelector = 0 (or = 4)
-    -- (2) Potential problem with phc -m full permutation group option
+  -- To Do:
+    -- 1. Add argument options for which method you desire
+      -- ex. (List,ZZ) := (system,optionIndex) -> ();
+    -- 2. Mimic mixedVolume to optionally return the start system (p) since function currently returns nothing
+      -- Also return the number of solutions to the start system since this is the same as = of solns to target system
+      -- (need to record this in final results)
+    -- 3. Test to ensure it works
 
     -- Note: In FindSymmetries.m2, I had to modify line 1 for this load to work. New line 1: load "./SymmetricGroupUtils.m2"
 
@@ -920,13 +923,12 @@ mixedVolumeSymmetryTest List := system -> (
   cmdfile := filename|"PHCcommands";
   sesfile := filename|"PHCsession";
   startfile := filename|"PHCstart";
-  --startsysfile := filename|"Poly-StartSys-Test";
 
   -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
 
   methodSelector := 3;
-  groupSelector := 0;
+  groupSelector := 1;
 
   -- Writing & Setup: PHCcommands file
   file := openOut cmdfile;
@@ -943,7 +945,7 @@ mixedVolumeSymmetryTest List := system -> (
   for a in symGroupGens do(
     -- print(a);
     for b in a do(
-      -- print(b);
+      print(vars_b);
       file << (vars_b) << endl;
       -- These are the variables which need to be written to the file for the symmetry
     );
@@ -969,7 +971,7 @@ mixedVolumeSymmetryTest List := system -> (
   -- Data for upper bound for random lifting
   file << "100" << endl;
   -- Menu for symmetric polyhedral continuation
-  file << "1" << endl;
+  file << "2" << endl;
   -- Data for string of characters to write the start solutions on (OPTION 2 CAUSES PROBLEMS)
   file << startfile << endl;
 
