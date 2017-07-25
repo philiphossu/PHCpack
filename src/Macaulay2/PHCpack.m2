@@ -887,7 +887,7 @@ load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/Idea
 --load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/IdealSymmetries/experiments.m2";
 
 mixedVolumeSymmetryTest = method()
-mixedVolumeSymmetryTest List := system -> (
+mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   -- To Do:
     -- 1. Add argument options for which method you desire
@@ -927,13 +927,13 @@ mixedVolumeSymmetryTest List := system -> (
   -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
 
-  methodSelector := 3;
+  -- methodSelector := 3;
   groupSelector := 1;
 
   -- Writing & Setup: PHCcommands file
   file := openOut cmdfile;
 
-  if(methodSelector == 3) then (
+  if(methodOption == 3) then (
   -- Menu for lifting strategies
   file << "3" <<endl;
   if(groupSelector == 0) then(
@@ -977,7 +977,7 @@ mixedVolumeSymmetryTest List := system -> (
 
   );
 
-  if(methodSelector == 0) then(
+  if(methodOption == 0) then(
   -- Menu for lifting strategies
   file << "0" << endl;
   -- Option for having a mixed subdivision
@@ -1001,7 +1001,7 @@ mixedVolumeSymmetryTest List := system -> (
 
   );
 
-  if(methodSelector == 4) then(
+  if(methodOption == 4) then(
     -- Menu for lifting strategies
     file << "4" << endl;
     -- Menu for precision of coefficient system
