@@ -895,14 +895,20 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     -- startSys: start system
     -- startSysSolns: solutions to the start system
     -- numStartSysSolns: number of solutions to the start system
-     
+
   -- To Do:
-    -- 1. Add argument options for which method you desire
+    -- 1. (DONE) Add argument options for which method you desire
       -- ex. (List,ZZ) := (system,optionIndex) -> ();
-    -- 2. Mimic mixedVolume to optionally return the start system (p) since function currently returns nothing
+    -- 2. (IN PROGRESS) Mimic mixedVolume to optionally return the start system (p) since function currently returns nothing
       -- Also return the number of solutions to the start system since this is the same as = of solns to target system
       -- (need to record this in final results)
-    -- 3. Test to ensure it works
+    -- 3. (IN PROGRESS) Test to ensure it work
+
+    -- Note for 7/26:
+      -- Need to determine how to write start SYSTEM vs start SYSTEM SOLUTIONS in my different cases
+      -- This needs to be fixed before the output triple can be formed
+      -- I'm currently getting problems in option 0 and option 3, likely due to how I write the start sys and start sys solns to the same file
+      -- There must be some way to fix this...
 
     -- Note: In FindSymmetries.m2, I had to modify line 1 for this load to work. New line 1: load "./SymmetricGroupUtils.m2"
 
@@ -931,6 +937,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   cmdfile := filename|"PHCcommands";
   sesfile := filename|"PHCsession";
   startfile := filename|"PHCstart";
+  startSolnsFile := filename|"PHCstartSolns";
 
   -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
@@ -982,6 +989,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   file << "2" << endl;
   -- Data for string of characters to write the start solutions on (OPTION 2 CAUSES PROBLEMS)
   file << startfile << endl;
+  -- file << startSolnsFile << endl;
 
   );
 
@@ -1043,20 +1051,22 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   F := get outfile;
 
   -- startSys holds the start system for output
-  startSys := startSystemFromFile(startfile);
-
+  --startSys := startSystemFromFile(startfile);
+  {*
   -- startSysSolns holds the start system solutions for output
-  solnsFile := startfile | ".sols";
-  execstr = PHCexe|" -z "|startfile|" "|solnsFile;
+  solsfile := startfile | ".sols";
+  p := startSystemFromFile(startfile);
+  execstr = PHCexe|" -z "|startfile|" "|solsfile;
   ret = run(execstr);
   if ret =!= 0 then
     error "Error occurred while executing PHCpack command: phc -m";
-  startSysSolns := parseSolutions(solnsFile, R);
+  sols := parseSolutions(solsfile, ring ideal system);
 
   -- numStartSysSolns holds the number of start system solutions for output
-  numStartSysSolns := #startSysSolns;
+  numStartSysSolns := #sols;
 
-  result = (startSys, startSysSolns, numStartSysSolns);
+  result = (p, sols, numStartSysSolns);
+  *}
 
   result
 
