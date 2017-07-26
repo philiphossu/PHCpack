@@ -888,7 +888,14 @@ load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/Idea
 
 mixedVolumeSymmetryTest = method()
 mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
-
+  -- IN (system,methodOption):
+    -- system: system of polynomial equations
+    -- methodOption: method selector, ex. 0 = static lifting, 3 = symmetric lifting, 4 = mixedVol algorithm
+  -- OUT (startSys, startSysSolns, numStartSysSolns):
+    -- startSys: start system
+    -- startSysSolns: solutions to the start system
+    -- numStartSysSolns: number of solutions to the start system
+     
   -- To Do:
     -- 1. Add argument options for which method you desire
       -- ex. (List,ZZ) := (system,optionIndex) -> ();
