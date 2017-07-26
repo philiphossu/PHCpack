@@ -906,6 +906,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   -- vars_0 is variable 1 in the system, vars_1 is variable 2, etc.
   N := #system;
   symGroupGens := findSymmetry(ideal(system));
+  local result;
 
   -- Pre-checks to see if phc -m should be called
   if N < numgens R then
@@ -1033,6 +1034,24 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   if ret =!= 0 then
     error "Error occurred while executing PHCpack command: phc -m";
   F := get outfile;
+
+  -- startSys holds the start system for output
+  startSys := startSystemFromFile(startfile);
+
+  -- startSysSolns holds the start system solutions for output
+  solnsFile := startfile | ".sols";
+  execstr = PHCexe|" -z "|startfile|" "|solnsFile;
+  ret = run(execstr);
+  if ret =!= 0 then
+    error "Error occurred while executing PHCpack command: phc -m";
+  startSysSolns := parseSolutions(solnsFile, R);
+
+  -- numStartSysSolns holds the number of start system solutions for output
+  numStartSysSolns := #startSysSolns;
+
+  result = (startSys, startSysSolns, numStartSysSolns);
+
+  result
 
 )
 
