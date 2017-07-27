@@ -937,7 +937,8 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   cmdfile := filename|"PHCcommands";
   sesfile := filename|"PHCsession";
   startfile := filename|"PHCstart";
-  startSolnsFile := filename|"PHCstartSolns";
+  -- startSolnsFile := filename|"PHCstartSolns";
+  solsfile := startfile | ".sols";
 
   -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
@@ -989,7 +990,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   file << "2" << endl;
   -- Data for string of characters to write the start solutions on (OPTION 2 CAUSES PROBLEMS)
   file << startfile << endl;
-  -- file << startSolnsFile << endl;
+  -- file << solsfile << endl;
 
   );
 
@@ -1012,8 +1013,8 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   file << "n" << endl;
   -- Menu for polyhedral continuation
   file << "2" << endl;
-  -- Data for string of characters to write start solutions on (Option 2 somehow does not seem to cause problems here??)
-  file << startfile << endl;
+  -- Data for string of characters to write start solutions on
+  file << solsfile << endl;
 
   );
 
@@ -1050,23 +1051,39 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     error "Error occurred while executing PHCpack command: phc -m";
   F := get outfile;
 
-  -- startSys holds the start system for output
-  --startSys := startSystemFromFile(startfile);
-  {*
-  -- startSysSolns holds the start system solutions for output
-  solsfile := startfile | ".sols";
-  p := startSystemFromFile(startfile);
-  execstr = PHCexe|" -z "|startfile|" "|solsfile;
-  ret = run(execstr);
-  if ret =!= 0 then
-    error "Error occurred while executing PHCpack command: phc -m";
-  sols := parseSolutions(solsfile, ring ideal system);
+  local p;
+  local sols;
+  local numStartSysSolns;
 
-  -- numStartSysSolns holds the number of start system solutions for output
-  numStartSysSolns := #sols;
+  if(methodOption == 4) then(
+    -- startSysSolns holds the start system solutions for output
+    -- solsfile := startfile | ".sols";
+    p = startSystemFromFile(startfile);
+    execstr = PHCexe|" -z "|startfile|" "|solsfile;
+    ret = run(execstr);
+    if ret =!= 0 then
+      error "Error occurred while executing PHCpack command: phc -m";
+    sols = parseSolutions(solsfile, ring ideal system);
 
-  result = (p, sols, numStartSysSolns);
-  *}
+    -- numStartSysSolns holds the number of start system solutions for output
+    numStartSysSolns = #sols;
+
+    result = (p, sols, numStartSysSolns);
+  );
+
+  if(methodOption == 0) then(
+    p = startSystemFromFile(startfile);
+    execstr = PHCexe|" -z "|startfile|" "|solsfile;
+    ret = run(execstr);
+    if ret =!= 0 then
+      error "Error occurred while executing PHCpack command: phc -m";
+    sols = parseSolutions(solsfile, ring ideal system);
+
+    -- numStartSysSolns holds the number of start system solutions for output
+    numStartSysSolns = #sols;
+
+    result = (p, sols, numStartSysSolns);
+  );
 
   result
 
