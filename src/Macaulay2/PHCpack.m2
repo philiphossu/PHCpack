@@ -1014,7 +1014,8 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   -- Menu for polyhedral continuation
   file << "2" << endl;
   -- Data for string of characters to write start solutions on
-  file << solsfile << endl;
+  -- file << solsfile << endl;
+    file << startfile << endl;
 
   );
 
@@ -1071,6 +1072,12 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     result = (p, sols, numStartSysSolns);
   );
 
+  if(methodOption == 3) then(
+
+  );
+
+  //Note: Option 0 seems to be a bit of a difficult one right now...
+  {*
   if(methodOption == 0) then(
     p = startSystemFromFile(startfile);
     execstr = PHCexe|" -z "|startfile|" "|solsfile;
@@ -1082,8 +1089,10 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     -- numStartSysSolns holds the number of start system solutions for output
     numStartSysSolns = #sols;
 
-    result = (p, sols, numStartSysSolns);
+    -- result = (p, sols, numStartSysSolns);
+    result = (sols, numStartSysSolns);
   );
+  *}
 
   result
 
