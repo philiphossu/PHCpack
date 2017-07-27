@@ -1015,7 +1015,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   file << "2" << endl;
   -- Data for string of characters to write start solutions on
   -- file << solsfile << endl;
-    file << startfile << endl;
+  file << startfile << endl;
 
   );
 
@@ -1071,12 +1071,19 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
     result = (p, sols, numStartSysSolns);
   );
-
+  {*
   if(methodOption == 3) then(
+    p = startSystemFromFile(startfile);
+    execstr = PHCexe|" -z "|startfile|" "|solsfile;
+    ret = run(execstr);
+    if ret =!= 0 then
+      error "Error occurred while executing PHCpack command: phc -m";
+    sols = parseSolutions(solsfile, ring ideal system);
 
+    result = (p, sols, numStartSysSolns);
   );
-
-  //Note: Option 0 seems to be a bit of a difficult one right now...
+  *}
+  -- Note: Option 0 seems to be a bit of a difficult one right now...
   {*
   if(methodOption == 0) then(
     p = startSystemFromFile(startfile);
