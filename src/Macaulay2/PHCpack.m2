@@ -883,7 +883,7 @@ isWitnessSetMember (WitnessSet,Point) := o-> (witset,testpoint) -> (
 
 -- Attempting to create a startSystemFromFile which works with the symmetric lifting option 3
 newstartSystemFromFile = method(TypicalValue => List)
-newstartSystemFromFile (String) := (name) -> (
+newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
   -- IN: file name starting with a random coefficient start system
   -- OUT: list of polynomials in a ring with coefficients in CC
   -- REQUIRED: the format of the system on file is a random coefficient
@@ -892,15 +892,44 @@ newstartSystemFromFile (String) := (name) -> (
 
   print("In newstartSystemFromFile");
 
-  -- Retrieve the file
-  F := get name;
-  local result;
-  s := get name;
+  A := get outFileName;
+  outL := lines(A);
+  outN := value outL_0;
+  print("Number of equations: ",outN);
+
+  -- Retrieve the start file
+  -- local result;
+  result = new MutableList;
+  s := get startFileName;
 
   -- Perform the necessary replacements
   s = replace("i","ii",s);
   s = replace("E","e",s);
   s = replace("e\\+00","",s);
+
+  L := lines(s);
+  n := #L;
+  i := 0;
+
+  -- print("Number of lines",n);
+  print("First line value",L_i);
+
+  while L_i != "THe GeNeRATING SOLUTIONS :" do (
+    print("Line",L_i);
+    if L_i != ";" then(
+      -- result_i = L_i;
+      -- print("Adding to result", L_i);
+      -- append((results), L_i);
+    );
+    i = i + 1;
+  );
+
+  counter := 0;
+  -- while result_counter do(
+    -- print(result_counter);
+  -- );
+
+  result
 
   {*
 
@@ -1128,10 +1157,10 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   );
 
   if(methodOption == 3) then(
-    print("Before calling newstartSystemFromFile");
-    p = newstartSystemFromFile(startfile);
-    print("After calling newstartSystemFromFile");
-
+    -- print("Before calling newstartSystemFromFile");
+    p = newstartSystemFromFile(outfile,startfile);
+    -- print("After calling newstartSystemFromFile");
+    result = p;
     {*
     execstr = PHCexe|" -z "|startfile|" "|solsfile;
     ret = run(execstr);
