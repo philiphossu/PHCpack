@@ -879,6 +879,63 @@ isWitnessSetMember (WitnessSet,Point) := o-> (witset,testpoint) -> (
   return result;
 )
 
+-- Philip Testing
+
+-- Attempting to create a startSystemFromFile which works with the symmetric lifting option 3
+newstartSystemFromFile = method(TypicalValue => List)
+newstartSystemFromFile (String) := (name) -> (
+  -- IN: file name starting with a random coefficient start system
+  -- OUT: list of polynomials in a ring with coefficients in CC
+  -- REQUIRED: the format of the system on file is a random coefficient
+  --   system produced by phc -m, every term starts on a separate line
+  --   with the "+" sign.  The coefficient field must be CC.
+
+  print("In newstartSystemFromFile");
+
+  -- Retrieve the file
+  F := get name;
+  local result;
+  s := get name;
+
+  -- Perform the necessary replacements
+  s = replace("i","ii",s);
+  s = replace("E","e",s);
+  s = replace("e\\+00","",s);
+
+  {*
+
+  s := get name; -- s is the file
+  s = replace("i","ii",s);
+  s = replace("E","e",s);
+  s = replace("e\\+00","",s);
+
+  L := lines(s); -- L is a list of all of the lines in s
+  n := value L_0; -- n is the value of the first line
+  result := {};
+  i := 0; j := 1;
+  local stop;
+  local term;
+  local p;
+  while i < n do ( -- How can you be comparing a number to a line?
+    stop = false; p = 0;
+    while not stop do (
+      if #L_j != 0 then (
+        -- we have to bite off the first "+" sign of the term
+        if (L_j_(#L_j-1) != ";") then (
+          term = value substring(1,#L_j-1,L_j); p = p + term;
+        ) else ( -- in this case (L_j_(#L_j-1) == ";") holds
+          term = value substring(1,#L_j-2,L_j); p = p + term;
+          stop = true; result = result | {p}
+        );
+      ); j = j + 1;
+      stop = stop or (j >= #L);
+    );
+    i = i + 1;
+  );
+  result
+  *}
+)
+
 ------------------
 -- MIXED VOLUME --
 ------------------
@@ -938,7 +995,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   sesfile := filename|"PHCsession";
   startfile := filename|"PHCstart";
   -- startSolnsFile := filename|"PHCstartSolns";
-  solsfile := startfile | ".sols";
+  solsfile := startfile|".sols";
 
   -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
@@ -990,7 +1047,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   file << "2" << endl;
   -- Data for string of characters to write the start solutions on (OPTION 2 CAUSES PROBLEMS)
   file << startfile << endl;
-  -- file << solsfile << endl;
 
   );
 
@@ -1012,9 +1068,8 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   -- Option for having mixed cells on a separate file
   file << "n" << endl;
   -- Menu for polyhedral continuation
-  file << "2" << endl;
+  file << "1" << endl;
   -- Data for string of characters to write start solutions on
-  -- file << solsfile << endl;
   file << startfile << endl;
 
   );
@@ -1056,24 +1111,28 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   local sols;
   local numStartSysSolns;
 
-  if(methodOption == 4) then(
-    -- startSysSolns holds the start system solutions for output
-    -- solsfile := startfile | ".sols";
+  if(methodOption == 4) then (
     p = startSystemFromFile(startfile);
     execstr = PHCexe|" -z "|startfile|" "|solsfile;
     ret = run(execstr);
     if ret =!= 0 then
       error "Error occurred while executing PHCpack command: phc -m";
+    print("Before");
     sols = parseSolutions(solsfile, ring ideal system);
-
+    print("After");
     -- numStartSysSolns holds the number of start system solutions for output
     numStartSysSolns = #sols;
-
+    -- result = (p);
     result = (p, sols, numStartSysSolns);
+
   );
-  {*
+
   if(methodOption == 3) then(
-    p = startSystemFromFile(startfile);
+    print("Before calling newstartSystemFromFile");
+    p = newstartSystemFromFile(startfile);
+    print("After calling newstartSystemFromFile");
+
+    {*
     execstr = PHCexe|" -z "|startfile|" "|solsfile;
     ret = run(execstr);
     if ret =!= 0 then
@@ -1081,25 +1140,27 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     sols = parseSolutions(solsfile, ring ideal system);
 
     result = (p, sols, numStartSysSolns);
+    *}
   );
-  *}
+
   -- Note: Option 0 seems to be a bit of a difficult one right now...
-  {*
+
   if(methodOption == 0) then(
     p = startSystemFromFile(startfile);
     execstr = PHCexe|" -z "|startfile|" "|solsfile;
     ret = run(execstr);
     if ret =!= 0 then
       error "Error occurred while executing PHCpack command: phc -m";
+    print("Before");
     sols = parseSolutions(solsfile, ring ideal system);
-
+    print("After");
     -- numStartSysSolns holds the number of start system solutions for output
     numStartSysSolns = #sols;
+    -- result = (p);
 
-    -- result = (p, sols, numStartSysSolns);
-    result = (sols, numStartSysSolns);
+    result = (p, sols, numStartSysSolns);
   );
-  *}
+
 
   result
 
