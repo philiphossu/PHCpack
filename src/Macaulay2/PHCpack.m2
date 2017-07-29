@@ -892,7 +892,7 @@ isWitnessSetMember (WitnessSet,Point) := o-> (witset,testpoint) -> (
 
 -- Attempting to create a startSystemFromFile which works with the symmetric lifting option 3
 newstartSystemFromFile = method(TypicalValue => List)
-newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
+newstartSystemFromFile (String) := (startFileName) -> (
   -- IN: file name starting with a random coefficient start system
   -- OUT: list of polynomials in a ring with coefficients in CC
   -- REQUIRED: the format of the system on file is a random coefficient
@@ -907,9 +907,9 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
 
   print("In newstartSystemFromFile");
 
-  A := get outFileName;
-  outL := lines(A);
-  outN := value outL_0;
+  -- A := get outFileName;
+  -- outL := lines(A);
+  -- outN := value outL_0;
   -- print("Number of equations: ",outN);
 
   -- Retrieve the start file
@@ -1045,25 +1045,36 @@ newParseSolutions (String) := (outFileName) -> (
   s := get outFileName;
 
   -- Perform the necessary replacements
-  s = replace("i","ii",s);
-  s = replace("E","e",s);
-  s = replace("e\\+00","",s);
+  -- s = replace("i","ii",s);
+  -- s = replace("E","e",s);
+  -- s = replace("e\\+00","",s);
 
   L := lines(s);
   n := #L;
+  -- print(n);
   i := 0;
   j := 0;
   flag := 0;
   counter := 0;
 
-  while(i < n) do(
-    -- print("Line: ",L_i);
-    if L_i != "the solutiion for t :" then(
+  while(i < n+1) do(
+    print("Line: ",L_i);
+    p = 0;
+    if L_i != "THE SOLUTIONS :" then (
       i = i + 1;
+      -- print("Found");
     )
     else(
+      print("Found");
+      while L_i != "the solutiion for t :" do(
+        i = i + 1;
+      );
+      print("Ok");
+      i = i + 1;
       while substring(0,6,L_i) != "== err" do(
         -- i = i + 1;
+        -- term = value L_i;
+        -- p = p + term;
         print("I found a solution: ",L_i, "On line: ",i);
         -- print("It was on line: ",i);
         i = i + 1;
@@ -1270,7 +1281,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   if(methodOption == 3) then(
     print("Before calling newstartSystemFromFile");
-    p = newstartSystemFromFile(outfile,startfile);
+    p = newstartSystemFromFile(startfile);
     print("After calling newstartSystemFromFile");
 
     sols = newParseSolutions(outfile);
