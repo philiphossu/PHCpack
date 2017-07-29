@@ -905,7 +905,7 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
   outL := lines(A);
   outN := value outL_0;
   -- print("Number of equations: ",outN);
-  {*
+
   -- Retrieve the start file
   -- local result;
   result := {};
@@ -921,35 +921,47 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
   L := lines(s);
   n := #L;
   i := 0;
+  j := 0;
+  flag := 0;
+  counter := 0;
+
+  -- print(L_i_-1)
 
   -- print("Number of lines",n);
-  print("First line value",L_i);
+  -- print("First line value",L_i);
 
-  while L_i != "THe GeNeRATING SOLUTIONS :" do (
+  while L_i != "THe GeNeRATING SOLUTiiONS :" do(
     p = 0;
-    term = value L_i;
-    -- print("Line",L_i);
-    if L_i == "" then(
-      print("Blank Line!!");
-    )
-    else (
-      if L_i != ";" then(
-        -- result_i = L_i;
-        print("Adding to result", term);
-        p = p  term;
+    while L_i != ";" do(
+      if L_i_-1 != ";" then(
+        -- print(counter);
+        term = value L_i;
+        p = p + term;
+        print("P", p);
+        i = i + 1;
+        -- counter = counter + 1;
       )
       else(
-        result = result | {p};
+        term = value L_i;
+        -- i = i + 1;
+        p = p + term;
+        flag = 1;
+      );
+      if flag == 1 then(
+        print("BREAKING");
+        break;
       );
     );
-    print(p);
+    result = result | {p};
+    if flag == 1 then (
+      break;
+    );
     i = i + 1;
+    print(result);
   );
 
   result
-
-  *}
-
+  {*
   s := get startFileName; -- s is the file
   s = replace("i","ii",s);
   s = replace("E","e",s);
@@ -968,13 +980,16 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
     stop = false;
     p = 0;
     while not stop do (
+      print("here1");
       if #L_j != 0 then (
         -- we have to bite off the first "+" sign of the term
         if (L_j_(#L_j-1) != ";") then (
+          print("here2");
           term = value substring(1,#L_j-1,L_j);
           p = p + term;
         )
         else ( -- in this case (L_j_(#L_j-1) == ";") holds
+          print("here3");
           term = value substring(1,#L_j-2,L_j);
           p = p + term;
           stop = true;
@@ -987,7 +1002,7 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
     i = i + 1;
   );
   result
-
+  *}
 )
 
 ------------------
@@ -1182,9 +1197,9 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   );
 
   if(methodOption == 3) then(
-    -- print("Before calling newstartSystemFromFile");
+    print("Before calling newstartSystemFromFile");
     p = newstartSystemFromFile(outfile,startfile);
-    -- print("After calling newstartSystemFromFile");
+    print("After calling newstartSystemFromFile");
     result = p;
     {*
     execstr = PHCexe|" -z "|startfile|" "|solsfile;
