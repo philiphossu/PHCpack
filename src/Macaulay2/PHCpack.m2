@@ -384,17 +384,26 @@ startSystemFromFile (String) := (name) -> (
   while i < n do (
     stop = false; p = 0;
     while not stop do (
+      -- print("P: ",p);
+      -- print("#L_j: ", #L_j);
+      -- print("#L_j != 0? ", #L_j != 0);
       if #L_j != 0 then (
         -- we have to bite off the first "+" sign of the term
+        -- print("L_j_(#L_j-1)", L_j_(#L_j-1));
+        -- print("L_j_(#L_j-1) != ;?", L_j_(#L_j-1) != ";");
         if (L_j_(#L_j-1) != ";") then (
            term = value substring(1,#L_j-1,L_j); p = p + term;
+           -- print("Term: ",term);
         ) else ( -- in this case (L_j_(#L_j-1) == ";") holds
           term = value substring(1,#L_j-2,L_j); p = p + term;
-          stop = true; result = result | {p}
+          -- print("Term: ",term);
+          stop = true;
+          result = result | {p}
         );
       ); j = j + 1;
       stop = stop or (j >= #L);
     );
+    print("============");
     i = i + 1;
   );
   result
@@ -895,11 +904,13 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
   A := get outFileName;
   outL := lines(A);
   outN := value outL_0;
-  print("Number of equations: ",outN);
-
+  -- print("Number of equations: ",outN);
+  {*
   -- Retrieve the start file
   -- local result;
-  result = new MutableList;
+  result := {};
+  local p;
+  local term;
   s := get startFileName;
 
   -- Perform the necessary replacements
@@ -915,54 +926,68 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
   print("First line value",L_i);
 
   while L_i != "THe GeNeRATING SOLUTIONS :" do (
-    print("Line",L_i);
-    if L_i != ";" then(
-      -- result_i = L_i;
-      -- print("Adding to result", L_i);
-      -- append((results), L_i);
+    p = 0;
+    term = value L_i;
+    -- print("Line",L_i);
+    if L_i == "" then(
+      print("Blank Line!!");
+    )
+    else (
+      if L_i != ";" then(
+        -- result_i = L_i;
+        print("Adding to result", term);
+        p = p  term;
+      )
+      else(
+        result = result | {p};
+      );
     );
+    print(p);
     i = i + 1;
   );
 
-  counter := 0;
-  -- while result_counter do(
-    -- print(result_counter);
-  -- );
-
   result
 
-  {*
+  *}
 
-  s := get name; -- s is the file
+  s := get startFileName; -- s is the file
   s = replace("i","ii",s);
   s = replace("E","e",s);
   s = replace("e\\+00","",s);
 
   L := lines(s); -- L is a list of all of the lines in s
-  n := value L_0; -- n is the value of the first line
+  -- n := value L_0; -- n is the value of the first line
+  n := outN;
   result := {};
   i := 0; j := 1;
   local stop;
   local term;
   local p;
-  while i < n do ( -- How can you be comparing a number to a line?
-    stop = false; p = 0;
+  -- while L_i != "THe GeNeRATING SOLUTIONS :" && L_j != "THe GeNeRATING SOLUTIONS :" do(
+  while i < n do (
+    stop = false;
+    p = 0;
     while not stop do (
       if #L_j != 0 then (
         -- we have to bite off the first "+" sign of the term
         if (L_j_(#L_j-1) != ";") then (
-          term = value substring(1,#L_j-1,L_j); p = p + term;
-        ) else ( -- in this case (L_j_(#L_j-1) == ";") holds
-          term = value substring(1,#L_j-2,L_j); p = p + term;
-          stop = true; result = result | {p}
+          term = value substring(1,#L_j-1,L_j);
+          p = p + term;
+        )
+        else ( -- in this case (L_j_(#L_j-1) == ";") holds
+          term = value substring(1,#L_j-2,L_j);
+          p = p + term;
+          stop = true;
+          result = result | {p}
         );
-      ); j = j + 1;
+      );
+      j = j + 1;
       stop = stop or (j >= #L);
     );
     i = i + 1;
   );
   result
-  *}
+
 )
 
 ------------------
