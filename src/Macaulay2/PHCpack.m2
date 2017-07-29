@@ -1011,14 +1011,14 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
   *}
 )
 
-newParseSolutions = method(TypicalValue => Sequence, Options => {Bits => 53})
-parseSolutions (String,Ring) := o -> (s,R) -> (
+newParseSolutions = method()
+newParseSolutions (String) := (outFileName) -> (
   -- parses solutions in PHCpack format
   -- IN:  s = string of solutions in PHCmaple format
   --      V = list of variable names
   -- OUT: List of solutions, each of type Point,
   --      carrying also other diagnostic information about each.
-
+  {*
   oldprec := defaultPrecision;
   defaultPrecision = o.Bits;
   L := get s;
@@ -1036,7 +1036,8 @@ parseSolutions (String,Ring) := o -> (s,R) -> (
   defaultPrecision = oldprec;
   apply(sols, sol->point( {apply(gens R, v->sol#v)} | outputToPoint sol ))
 
-  {*
+  *}
+  print("I am here");
 
   solutions := {};
   local p;
@@ -1056,17 +1057,23 @@ parseSolutions (String,Ring) := o -> (s,R) -> (
   counter := 0;
 
   while(i < n) do(
-    if L_i != "the solution for t :" then(
+    -- print("Line: ",L_i);
+    if L_i != "the solutiion for t :" then(
       i = i + 1;
     )
     else(
-      -- while L_i
+      while substring(0,6,L_i) != "== err" do(
+        -- i = i + 1;
+        print("I found a solution: ",L_i, "On line: ",i);
+        -- print("It was on line: ",i);
+        i = i + 1;
+      );
     );
   );
 
   solutions
 
-  *}
+
 
 )
 
