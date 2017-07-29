@@ -899,6 +899,12 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
   --   system produced by phc -m, every term starts on a separate line
   --   with the "+" sign.  The coefficient field must be CC.
 
+  -- NOTE:
+  -- My function expects that the start file will contain the random coefficient system in
+  -- the following format. Semicolons are on their own lines, and they separate equations.
+  -- Only the last equation has an in-line semicolon. If this format is any different, this
+  -- function will fail.
+
   print("In newstartSystemFromFile");
 
   A := get outFileName;
@@ -937,7 +943,7 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
         -- print(counter);
         term = value L_i;
         p = p + term;
-        print("P", p);
+        -- print("P", p);
         i = i + 1;
         -- counter = counter + 1;
       )
@@ -948,7 +954,7 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
         flag = 1;
       );
       if flag == 1 then(
-        print("BREAKING");
+        -- print("BREAKING");
         break;
       );
     );
@@ -957,7 +963,7 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
       break;
     );
     i = i + 1;
-    print(result);
+    -- print(result);
   );
 
   result
@@ -1003,6 +1009,65 @@ newstartSystemFromFile (String, String) := (outFileName, startFileName) -> (
   );
   result
   *}
+)
+
+newParseSolutions = method(TypicalValue => Sequence, Options => {Bits => 53})
+parseSolutions (String,Ring) := o -> (s,R) -> (
+  -- parses solutions in PHCpack format
+  -- IN:  s = string of solutions in PHCmaple format
+  --      V = list of variable names
+  -- OUT: List of solutions, each of type Point,
+  --      carrying also other diagnostic information about each.
+
+  oldprec := defaultPrecision;
+  defaultPrecision = o.Bits;
+  L := get s;
+  L = replace("=", "=>", L);
+  L = replace("I", "ii", L);
+  L = replace("E\\+","e",L);
+  L = replace("E", "e", L);
+  L = replace("time", "\"time\"", L);
+  L = replace("rco", "\"rco\"", L);
+  L = replace("multiplicity", "\"mult\"", L);
+  L = replace("\\bres\\b", "\"residual\"", L);
+  L = replace("\\bresolution\\b", "\"residual\"", L);
+  -- because M2 automatically thinks "res"=resolution
+  sols := toList apply(value L, sol->new HashTable from toList sol);
+  defaultPrecision = oldprec;
+  apply(sols, sol->point( {apply(gens R, v->sol#v)} | outputToPoint sol ))
+
+  {*
+
+  solutions := {};
+  local p;
+  local term;
+  s := get outFileName;
+
+  -- Perform the necessary replacements
+  s = replace("i","ii",s);
+  s = replace("E","e",s);
+  s = replace("e\\+00","",s);
+
+  L := lines(s);
+  n := #L;
+  i := 0;
+  j := 0;
+  flag := 0;
+  counter := 0;
+
+  while(i < n) do(
+    if L_i != "the solution for t :" then(
+      i = i + 1;
+    )
+    else(
+      -- while L_i
+    );
+  );
+
+  solutions
+
+  *}
+
 )
 
 ------------------
@@ -1200,16 +1265,13 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     print("Before calling newstartSystemFromFile");
     p = newstartSystemFromFile(outfile,startfile);
     print("After calling newstartSystemFromFile");
-    result = p;
-    {*
-    execstr = PHCexe|" -z "|startfile|" "|solsfile;
-    ret = run(execstr);
-    if ret =!= 0 then
-      error "Error occurred while executing PHCpack command: phc -m";
-    sols = parseSolutions(solsfile, ring ideal system);
 
-    result = (p, sols, numStartSysSolns);
-    *}
+    sols = newParseSolutions(outfile);
+    -- sols = parseSolutions(solsfile, ring ideal system);
+
+    -- result = (p, sols, numStartSysSolns);
+    result = p;
+
   );
 
   -- Note: Option 0 seems to be a bit of a difficult one right now...
