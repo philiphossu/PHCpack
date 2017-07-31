@@ -907,11 +907,6 @@ newstartSystemFromFile (String) := (startFileName) -> (
 
   print("In newstartSystemFromFile");
 
-  -- A := get outFileName;
-  -- outL := lines(A);
-  -- outN := value outL_0;
-  -- print("Number of equations: ",outN);
-
   -- Retrieve the start file
   -- local result;
   result := {};
@@ -931,7 +926,7 @@ newstartSystemFromFile (String) := (startFileName) -> (
   flag := 0;
   counter := 0;
 
-  -- print(L_i_-1)
+  -- print(L_i_-1) -- Last character in the line
 
   -- print("Number of lines",n);
   -- print("First line value",L_i);
@@ -1053,33 +1048,19 @@ newParseSolutions (String) := (outFileName) -> (
   n := #L;
   -- print(n);
   i := 0;
-  j := 0;
-  flag := 0;
-  counter := 0;
+  -- j := 0;
+  -- flag := 0;
+  -- counter := 0;
 
-  while(i < n+1) do(
-    print("Line: ",L_i);
-    p = 0;
-    if L_i != "THE SOLUTIONS :" then (
+  while(i < n) do(
+    if L_i != "the solution for t :" then(
       i = i + 1;
-      -- print("Found");
     )
     else(
-      print("Found");
-      while L_i != "the solutiion for t :" do(
-        i = i + 1;
-      );
-      print("Ok");
       i = i + 1;
-      while substring(0,6,L_i) != "== err" do(
-        -- i = i + 1;
-        -- term = value L_i;
-        -- p = p + term;
-        print("I found a solution: ",L_i, "On line: ",i);
-        -- print("It was on line: ",i);
-        i = i + 1;
-      );
+
     );
+
   );
 
   solutions
@@ -1177,7 +1158,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   );
   )
   else(
-  file << "y" << endl;
+    file << "y" << endl;
   );
   -- Option for generation of the group
   file << "n" << endl;
@@ -1284,15 +1265,26 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     p = newstartSystemFromFile(startfile);
     print("After calling newstartSystemFromFile");
 
-    sols = newParseSolutions(outfile);
-    -- sols = parseSolutions(solsfile, ring ideal system);
+    test := get startfile;
+    test = replace("THE GENERATING SOLUTIONS :\n","\nTHE SOLUTIONS :",test);
+
+    L := lines(test);
+    for a in L do(
+      print(a);
+    );
+
+    execstr = PHCexe|" -z "|startfile|" "|solsfile;
+    ret = run(execstr);
+    if ret =!= 0 then
+      error "Error occurred while executing PHCpack command: phc -m";
+
+    -- sols = newParseSolutions(startfile);
+    sols = parseSolutions(solsfile, ring ideal system);
 
     -- result = (p, sols, numStartSysSolns);
     result = p;
 
   );
-
-  -- Note: Option 0 seems to be a bit of a difficult one right now...
 
   if(methodOption == 0) then(
     p = startSystemFromFile(startfile);
@@ -1309,7 +1301,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
     result = (p, sols, numStartSysSolns);
   );
-
 
   result
 
