@@ -1046,21 +1046,89 @@ newParseSolutions (String) := (outFileName) -> (
 
   L := lines(s);
   n := #L;
-  -- print(n);
   i := 0;
   -- j := 0;
-  -- flag := 0;
+  flag := 0;
+  flag2 := "go";
+  local tempstr;
+  local tempstr2;
+  local flag3;
+  -- Flag will be = 1 if "A list of " is found using substring
   -- counter := 0;
 
-  while(i < n) do(
-    if L_i != "the solution for t :" then(
+  print("Entering loops");
+  print("n: ",n);
+  while L_i != "THE SOLUTIONS :" do(
+    if(i < n) then(
       i = i + 1;
     )
     else(
-      i = i + 1;
-
+      flag = 1;
+      print("No solutions found on file.");
+      break;
     );
+  );
+  print("Found THE SOLUTIONS on line: ",i);
+  while L_i != "the solution for t :" do(
+    if i < n then(
+      i = i + 1;
+    )
+    else(
+      flag = 1;
+      print("No solutions found on file.");
+      break;
+    );
+  );
+  -- Made it to the first set of solutions. Now extract...
+  while flag2 != "stop" do(
+    if substring(0,9,L_i) == "A list of" then(
+      flag2 = "stop";
+      print("Found end of the file.");
+      break;
+    );
+    i = i + 1;
+    while substring(0,6,L_i) != "== err" do(
+      print(L_i);
+      tempstr = "";
+      tempstr2 = "";
+      tempstr = separate(" ",L_i);
+      if tempstr_3 == ""  then(
+        if tempstr_6 == "" then(
+          tempstr2 = tempstr_4|"+"|tempstr_7|"*ii";
+          flag3 = 1;
+        );
+        if tempstr_5 == "" then(
+          tempstr2 = tempstr_4|"+"|tempstr_6|"*ii";
+          flag = 1;
+        );
+        if flag != 1 then(
+          tempstr2 = tempstr_4|"+"|tempstr_6|"*ii";
+        );
+      )
+      else(
+        if tempstr_5 != ""  then(
+          tempstr2 = tempstr_3|"+"|tempstr_5|"*ii";
+        )
+        else(
+          tempstr2 = tempstr_3|"+"|tempstr_6|"*ii";
+        );
+      );
+      -- tempstr2 = tempstr_4|"+"|tempstr_4|"*ii";
+      -- print("tempstr2",tempstr2);
+      tempstr2 = replace("E","e",tempstr2);
+      tempstr2 = replace("e\\+00","",tempstr2);
+      print("tempstr2",tempstr2);
 
+      i = i + 1;
+    );
+    if L_(i+1) == "===========================================================================" then(
+      flag2 = "stop";
+      break;
+    );
+    while L_i != "the solution for t :" do(
+      i = i + 1;
+    );
+    i = i + 1;
   );
 
   solutions
@@ -1265,21 +1333,21 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     p = newstartSystemFromFile(startfile);
     print("After calling newstartSystemFromFile");
 
-    test := get startfile;
-    test = replace("THE GENERATING SOLUTIONS :\n","\nTHE SOLUTIONS :",test);
+    -- test := get startfile;
+    -- test = replace("THE GENERATING SOLUTIONS :\n","\nTHE SOLUTIONS :",test);
 
-    L := lines(test);
-    for a in L do(
-      print(a);
-    );
+    -- L := lines(test);
+    -- for a in L do(
+    --   print(a);
+    -- );
 
-    execstr = PHCexe|" -z "|startfile|" "|solsfile;
-    ret = run(execstr);
-    if ret =!= 0 then
-      error "Error occurred while executing PHCpack command: phc -m";
+    -- execstr = PHCexe|" -z "|startfile|" "|solsfile;
+    -- ret = run(execstr);
+    -- if ret =!= 0 then
+    --   error "Error occurred while executing PHCpack command: phc -m";
 
-    -- sols = newParseSolutions(startfile);
-    sols = parseSolutions(solsfile, ring ideal system);
+    sols = newParseSolutions(outfile);
+    -- sols = parseSolutions(solsfile, ring ideal system);
 
     -- result = (p, sols, numStartSysSolns);
     result = p;
