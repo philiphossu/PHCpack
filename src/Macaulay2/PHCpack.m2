@@ -1092,28 +1092,22 @@ newParseSolutions (String) := (outFileName) -> (
       tempstr = "";
       tempstr2 = "";
       tempstr = separate(" ",L_i);
-      if tempstr_3 == ""  then(
-        if tempstr_6 == "" then(
+      if tempstr_3 == ""  then( --First number will be positive
+        if tempstr_6 == "" then( --Second number will be positive
           tempstr2 = tempstr_4|"+"|tempstr_7|"*ii";
-          flag3 = 1;
-        );
-        if tempstr_5 == "" then(
-          tempstr2 = tempstr_4|"+"|tempstr_6|"*ii";
-          flag = 1;
-        );
-        if flag != 1 then(
+        )
+        else( -- Second number will be negative
           tempstr2 = tempstr_4|"+"|tempstr_6|"*ii";
         );
       )
-      else(
-        if tempstr_5 != ""  then(
-          tempstr2 = tempstr_3|"+"|tempstr_5|"*ii";
-        )
-        else(
+      else( -- First number will be negative
+        if tempstr_5 == "" then( --Second number will be positive
           tempstr2 = tempstr_3|"+"|tempstr_6|"*ii";
+        )
+        else( --Second number will be negative
+          tempstr2 = tempstr_3|"+"|tempstr_5|"*ii";
         );
       );
-      -- tempstr2 = tempstr_4|"+"|tempstr_4|"*ii";
       -- print("tempstr2",tempstr2);
       tempstr2 = replace("E","e",tempstr2);
       tempstr2 = replace("e\\+00","",tempstr2);
