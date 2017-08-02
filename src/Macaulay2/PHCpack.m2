@@ -1124,6 +1124,11 @@ newParseSolutions (String) := (outFileName) -> (
     );
     while L_i != "the solution for t :" do(
       i = i + 1;
+      if substring(0,37,L_i) == "Seed used in random number generators" then(
+        flag2 = "stop";
+        print("ERROR: No Solutions Found");
+        break;
+      );
     );
     i = i + 1;
   );
@@ -1133,8 +1138,6 @@ newParseSolutions (String) := (outFileName) -> (
   );
 
   solutions
-
-
 
 )
 
@@ -1350,8 +1353,9 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     sols = newParseSolutions(outfile);
     -- sols = parseSolutions(solsfile, ring ideal system);
 
-    -- result = (p, sols, numStartSysSolns);
-    result = p;
+    numStartSysSolns = #sols;
+
+    result = (p, sols, numStartSysSolns);
 
   );
 
