@@ -962,92 +962,28 @@ newstartSystemFromFile (String) := (startFileName) -> (
   );
 
   result
-  {*
-  s := get startFileName; -- s is the file
-  s = replace("i","ii",s);
-  s = replace("E","e",s);
-  s = replace("e\\+00","",s);
-
-  L := lines(s); -- L is a list of all of the lines in s
-  -- n := value L_0; -- n is the value of the first line
-  n := outN;
-  result := {};
-  i := 0; j := 1;
-  local stop;
-  local term;
-  local p;
-  -- while L_i != "THe GeNeRATING SOLUTIONS :" && L_j != "THe GeNeRATING SOLUTIONS :" do(
-  while i < n do (
-    stop = false;
-    p = 0;
-    while not stop do (
-      print("here1");
-      if #L_j != 0 then (
-        -- we have to bite off the first "+" sign of the term
-        if (L_j_(#L_j-1) != ";") then (
-          print("here2");
-          term = value substring(1,#L_j-1,L_j);
-          p = p + term;
-        )
-        else ( -- in this case (L_j_(#L_j-1) == ";") holds
-          print("here3");
-          term = value substring(1,#L_j-2,L_j);
-          p = p + term;
-          stop = true;
-          result = result | {p}
-        );
-      );
-      j = j + 1;
-      stop = stop or (j >= #L);
-    );
-    i = i + 1;
-  );
-  result
-  *}
 )
 
 newParseSolutions = method()
 newParseSolutions (String) := (outFileName) -> (
   -- parses solutions in PHCpack format
-  -- IN:  s = string of solutions in PHCmaple format
-  --      V = list of variable names
-  -- OUT: List of solutions, each of type Point,
-  --      carrying also other diagnostic information about each.
-  {*
-  oldprec := defaultPrecision;
-  defaultPrecision = o.Bits;
-  L := get s;
-  L = replace("=", "=>", L);
-  L = replace("I", "ii", L);
-  L = replace("E\\+","e",L);
-  L = replace("E", "e", L);
-  L = replace("time", "\"time\"", L);
-  L = replace("rco", "\"rco\"", L);
-  L = replace("multiplicity", "\"mult\"", L);
-  L = replace("\\bres\\b", "\"residual\"", L);
-  L = replace("\\bresolution\\b", "\"residual\"", L);
-  -- because M2 automatically thinks "res"=resolution
-  sols := toList apply(value L, sol->new HashTable from toList sol);
-  defaultPrecision = oldprec;
-  apply(sols, sol->point( {apply(gens R, v->sol#v)} | outputToPoint sol ))
+  -- IN:  the name of the output file for option 3,
+  --      symmetric lifting
+  -- OUT: List of solutions found on the output file
 
-  *}
-  print("I am here");
+  -- Current issue: If there are no solutions in the out file,
+  -- an array out of bounds issue occurs. This can be fixed.
+
+  -- print("I am here");
 
   solutions := {};
   local p;
   local term;
   s := get outFileName;
 
-  -- Perform the necessary replacements
-  -- s = replace("i","ii",s);
-  -- s = replace("E","e",s);
-  -- s = replace("e\\+00","",s);
-
   L := lines(s);
   n := #L;
   i := 0;
-  -- j := 0;
   flag := 0;
   flag2 := "go";
   local tempstr;
@@ -1055,10 +991,10 @@ newParseSolutions (String) := (outFileName) -> (
   local flag3;
   templist1 := {};
   -- Flag will be = 1 if "A list of " is found using substring
-  -- counter := 0;
 
-  print("Entering loops");
+  -- print("Entering loops");
   print("n: ",n);
+  -- While THE SOLUTIONS has not appeared in the file, move to the next line
   while L_i != "THE SOLUTIONS :" do(
     if(i < n) then(
       i = i + 1;
@@ -1070,6 +1006,7 @@ newParseSolutions (String) := (outFileName) -> (
     );
   );
   print("Found THE SOLUTIONS on line: ",i);
+  -- Once the solutions section of the file has been found, navigate to them
   while L_i != "the solution for t :" do(
     if i < n then(
       i = i + 1;
