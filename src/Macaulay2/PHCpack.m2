@@ -1053,6 +1053,7 @@ newParseSolutions (String) := (outFileName) -> (
   local tempstr;
   local tempstr2;
   local flag3;
+  templist1 := {};
   -- Flag will be = 1 if "A list of " is found using substring
   -- counter := 0;
 
@@ -1087,8 +1088,9 @@ newParseSolutions (String) := (outFileName) -> (
       break;
     );
     i = i + 1;
+    templist1 = {};
     while substring(0,6,L_i) != "== err" do(
-      print(L_i);
+      -- print(L_i);
       tempstr = "";
       tempstr2 = "";
       tempstr = separate(" ",L_i);
@@ -1111,10 +1113,11 @@ newParseSolutions (String) := (outFileName) -> (
       -- print("tempstr2",tempstr2);
       tempstr2 = replace("E","e",tempstr2);
       tempstr2 = replace("e\\+00","",tempstr2);
-      print("tempstr2",tempstr2);
-
+      -- print("tempstr2",tempstr2);
+      templist1 = append(templist1, value(tempstr2));
       i = i + 1;
     );
+    solutions = append(solutions, templist1);
     if L_(i+1) == "===========================================================================" then(
       flag2 = "stop";
       break;
@@ -1123,6 +1126,10 @@ newParseSolutions (String) := (outFileName) -> (
       i = i + 1;
     );
     i = i + 1;
+  );
+
+  for abc in solutions do(
+    print(abc);
   );
 
   solutions
