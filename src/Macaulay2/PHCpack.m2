@@ -989,6 +989,7 @@ newParseSolutions (String) := (outFileName) -> (
   local tempstr;
   local tempstr2;
   local flag3;
+  lastFlag := 0;
   templist1 := {};
   -- Flag will be = 1 if "A list of " is found using substring
 
@@ -996,26 +997,19 @@ newParseSolutions (String) := (outFileName) -> (
   print("n: ",n);
   -- While THE SOLUTIONS has not appeared in the file, move to the next line
   while L_i != "THE SOLUTIONS :" do(
-    if(i < n) then(
+    -- if(i < n) then(
       i = i + 1;
-    )
-    else(
-      flag = 1;
-      print("No solutions found on file.");
-      break;
-    );
+    -- )
+    -- else(
+      -- flag = 1;
+      -- print("No solutions found on file.");
+      -- break;
+    -- );
   );
   print("Found THE SOLUTIONS on line: ",i);
   -- Once the solutions section of the file has been found, navigate to them
   while L_i != "the solution for t :" do(
-    if i < n then(
-      i = i + 1;
-    )
-    else(
-      flag = 1;
-      print("No solutions found on file.");
-      break;
-    );
+    i = i + 1;
   );
   -- Made it to the first set of solutions. Now extract...
   while flag2 != "stop" do(
@@ -1024,10 +1018,13 @@ newParseSolutions (String) := (outFileName) -> (
       print("Found end of the file.");
       break;
     );
-    i = i + 1;
+    if(lastFlag == 0) then(
+      i = i + 1;
+    );
+    lastFlag = 1;
     templist1 = {};
     while substring(0,6,L_i) != "== err" do(
-      -- print(L_i);
+      print(L_i);
       tempstr = "";
       tempstr2 = "";
       tempstr = separate(" ",L_i);
@@ -1050,8 +1047,9 @@ newParseSolutions (String) := (outFileName) -> (
       -- print("tempstr2",tempstr2);
       tempstr2 = replace("E","e",tempstr2);
       tempstr2 = replace("e\\+00","",tempstr2);
-      -- print("tempstr2",tempstr2);
+      print("tempstr2",tempstr2);
       templist1 = append(templist1, value(tempstr2));
+      -- print(templist1);
       i = i + 1;
     );
     solutions = append(solutions, templist1);
@@ -1070,9 +1068,9 @@ newParseSolutions (String) := (outFileName) -> (
     i = i + 1;
   );
 
-  for abc in solutions do(
-    print(abc);
-  );
+  --for abc in solutions do(
+  --  print(abc);
+  --);
 
   solutions
 
