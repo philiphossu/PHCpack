@@ -991,6 +991,7 @@ newParseSolutions (String) := (outFileName) -> (
   local flag3;
   lastFlag := 0;
   templist1 := {};
+  ignoreSolFlag := 0;
   local p;
   -- Flag will be = 1 if "A list of " is found using substring
 
@@ -998,69 +999,81 @@ newParseSolutions (String) := (outFileName) -> (
   print("n: ",n);
   -- While THE SOLUTIONS has not appeared in the file, move to the next line
   while L_i != "THE SOLUTIONS :" do(
-    -- if(i < n) then(
-      i = i + 1;
-    -- )
-    -- else(
-      -- flag = 1;
-      -- print("No solutions found on file.");
-      -- break;
-    -- );
+    i = i + 1;
   );
   print("Found THE SOLUTIONS on line: ",i);
   -- Once the solutions section of the file has been found, navigate to them
-  while L_i != "the solution for t :" do(
+  while substring(0,9,L_i) != "solution " do(
     i = i + 1;
   );
-  -- Made it to the first set of solutions. Now extract...
+  -- Made it to the first set of solutions. Now, need to check if it's a success or failure/infinity...
   while flag2 != "stop" do(
+    ignoreSolFlag = 0;
     if substring(0,9,L_i) == "A list of" then(
       flag2 = "stop";
       print("Found end of the file.");
       break;
     );
-    if(lastFlag == 0) then(
+    -- Check for if the solution failed and must be disregarded
+    print(L_i);
+    if(substring(64,11,L_i) != "success") then(
+      ignoreSolFlag = 1;
+      print("Solution is bad. Should be ignored.");
+    )
+    else(
+      print("Solution is good. Should be added.");
+    );
+    -- Navigating up to the numbers which we want
+    while(L_i != "the solution for t :") do(
       i = i + 1;
     );
+    -- if(lastFlag == 0) then(
+       i = i + 1;
+    -- );
     lastFlag = 1;
     templist1 = {};
-    while substring(0,6,L_i) != "== err" do(
-      -- print(L_i);
-      tempstr = "";
-      tempstr2 = "";
-      tempstr = separate(" ",L_i);
-      if tempstr_3 == ""  then( --First number will be positive
-        if tempstr_6 == "" then( --Second number will be positive
-          tempstr2 = tempstr_4|"+"|tempstr_7|"*ii";
+    if(ignoreSolFlag == 0) then(
+      while substring(0,6,L_i) != "== err" do(
+        print(L_i);
+        tempstr = "";
+        tempstr2 = "";
+        tempstr = separate(" ",L_i);
+        if tempstr_3 == ""  then( --First number will be positive
+          if tempstr_6 == "" then( --Second number will be positive
+            tempstr2 = tempstr_4|"+"|tempstr_7|"*ii";
+          )
+          else( -- Second number will be negative
+            tempstr2 = tempstr_4|"+"|tempstr_6|"*ii";
+          );
         )
-        else( -- Second number will be negative
-          tempstr2 = tempstr_4|"+"|tempstr_6|"*ii";
+        else( -- First number will be negative
+          if tempstr_5 == "" then( --Second number will be positive
+            tempstr2 = tempstr_3|"+"|tempstr_6|"*ii";
+          )
+          else( --Second number will be negative
+            tempstr2 = tempstr_3|"+"|tempstr_5|"*ii";
+          );
         );
-      )
-      else( -- First number will be negative
-        if tempstr_5 == "" then( --Second number will be positive
-          tempstr2 = tempstr_3|"+"|tempstr_6|"*ii";
-        )
-        else( --Second number will be negative
-          tempstr2 = tempstr_3|"+"|tempstr_5|"*ii";
-        );
+        -- print("tempstr2",tempstr2);
+        tempstr2 = replace("E","e",tempstr2);
+        tempstr2 = replace("e\\+00","",tempstr2);
+        -- print("tempstr2",tempstr2);
+        templist1 = append(templist1, value(tempstr2));
+        -- print(templist1);
+        i = i + 1;
       );
-      -- print("tempstr2",tempstr2);
-      tempstr2 = replace("E","e",tempstr2);
-      tempstr2 = replace("e\\+00","",tempstr2);
-      -- print("tempstr2",tempstr2);
-      templist1 = append(templist1, value(tempstr2));
-      -- print(templist1);
-      i = i + 1;
     );
     -- print(templist1);
     p = point{templist1};
-    solutions = append(solutions, p);
+    if(ignoreSolFlag == 0) then(
+      solutions = append(solutions, p);
+    );
+    print(solutions);
     if L_(i+1) == "===========================================================================" then(
       flag2 = "stop";
       break;
     );
-    while L_i != "the solution for t :" do(
+    while substring(0,9,L_i) != "solution " do(
       i = i + 1;
       if substring(0,37,L_i) == "Seed used in random number generators" then(
         flag2 = "stop";
@@ -1068,7 +1081,7 @@ newParseSolutions (String) := (outFileName) -> (
         break;
       );
     );
-    i = i + 1;
+    -- i = i + 1;
   );
   solutions
 )
