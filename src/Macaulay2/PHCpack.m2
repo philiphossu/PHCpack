@@ -1016,7 +1016,7 @@ newParseSolutions (String) := (outFileName) -> (
     );
     -- Check for if the solution failed and must be disregarded
     print(L_i);
-    if(substring(64,11,L_i) != "success") then(
+    if(substring(64,11,L_i) != "success") and (substring(65,11,L_i) != "success") and (substring(66,11,L_i) != "success") and (substring(67,11,L_i) != "success") and (substring(68,11,L_i) != "success") then(
       ignoreSolFlag = 1;
       print("Solution is bad. Should be ignored.");
     )
@@ -1068,7 +1068,7 @@ newParseSolutions (String) := (outFileName) -> (
     if(ignoreSolFlag == 0) then(
       solutions = append(solutions, p);
     );
-    print(solutions);
+    -- print(solutions);
     if L_(i+1) == "===========================================================================" then(
       flag2 = "stop";
       break;
@@ -1077,11 +1077,14 @@ newParseSolutions (String) := (outFileName) -> (
       i = i + 1;
       if substring(0,37,L_i) == "Seed used in random number generators" then(
         flag2 = "stop";
-        print("ERROR: No Solutions Found");
+        print("End of file");
         break;
       );
     );
     -- i = i + 1;
+  );
+  if(#solutions == 0) then(
+    print("========== No Solutions Located ==========");
   );
   solutions
 )
