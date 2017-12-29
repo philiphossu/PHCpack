@@ -891,16 +891,17 @@ isWitnessSetMember (WitnessSet,Point) := o-> (witset,testpoint) -> (
 -- Philip Testing
 
 -- Start system from file function for the Symmetric lifting option
-symStartSysFromFile = method(TypicalValue => List)
-symStartSysFromFile (String, ring) := (startFileName, r) -> (
-  -- IN: file name, ring
+symStartSysFromFile = method() --TypicalValue => List
+symStartSysFromFile (String, List) := (startFileName, system) -> (
+  -- IN: file name, target system
   -- OUT: list of polynomials in a ring with coefficients in CC
 
   -- R := CC[k,l,m,n]
+  R := ring(ideal(system));
+  s := get "testfile";
+  currentLine := "";
 
-  s = get "testfile";
-
-  polySysStr = "{";
+  polySysStr := "{";
   for line in lines(s) do (
       if line == "THE GENERATING SOLUTIONS :" then
           break;
@@ -914,8 +915,8 @@ symStartSysFromFile (String, ring) := (startFileName, r) -> (
   );
 
   polySysStr = polySysStr | "}";
-  polySystem = value polySysStr
-  polySystem
+  polySystem = value polySysStr;
+  polySystem;
 )
 
 newParseSolutions = method()
@@ -1231,7 +1232,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   if(methodOption == 3) then(
     print("Before calling newstartSystemFromFile");
-    p = symStartSysFromFile(startfile);
+    p = symStartSysFromFile(startfile, system);
     print("After calling newstartSystemFromFile");
 
     -- test := get startfile;
