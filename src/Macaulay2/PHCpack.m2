@@ -890,81 +890,32 @@ isWitnessSetMember (WitnessSet,Point) := o-> (witset,testpoint) -> (
 
 -- Philip Testing
 
--- Attempting to create a startSystemFromFile which works with the symmetric lifting option 3
-newstartSystemFromFile2 = method(TypicalValue => List)
-newstartSystemFromFile2 (String) := (startFileName) -> (
-  -- IN: file name starting with a random coefficient start system
+-- Start system from file function for the Symmetric lifting option
+symStartSysFromFile = method(TypicalValue => List)
+symStartSysFromFile (String, ring) := (startFileName, r) -> (
+  -- IN: file name, ring
   -- OUT: list of polynomials in a ring with coefficients in CC
-  -- REQUIRED: the format of the system on file is a random coefficient
-  --   system produced by phc -m, every term starts on a separate line
-  --   with the "+" sign.  The coefficient field must be CC.
 
-  -- NOTE:
-  -- My function expects that the start file will contain the random coefficient system in
-  -- the following format. Semicolons are on their own lines, and they separate equations.
-  -- Only the last equation has an in-line semicolon. If this format is any different, this
-  -- function will fail.
+  -- R := CC[k,l,m,n]
 
-  print("In newstartSystemFromFile");
+  s = get "testfile";
 
-  -- Retrieve the start file
-  -- local result;
-  result := {};
-  local p;
-  local term;
-  s := get startFileName;
+  polySysStr = "{";
+  for line in lines(s) do (
+      if line == "THE GENERATING SOLUTIONS :" then
+          break;
 
-  -- Perform the necessary replacements
-  s = replace("i","ii",s);
-  s = replace("E","e",s);
-  s = replace("e\\+00","",s);
+      currentLine = replace("i", "ii", line);
+      currentLine = replace("E", "e", currentLine);
+      currentLine = replace("e\\+00", "", currentLine);
+      currentLine = replace(";", ",", currentLine);
 
-  L := lines(s);
-  n := #L;
-  i := 0;
-  j := 0;
-  flag := 0;
-  counter := 0;
-
-  -- print(L_i_-1) -- Last character in the line
-
-  print("Number of lines",n);
-  print("First line value",L_i);
-
-  p = 0;
-  while L_i_-1 != ";" do(
-    term = value L_i;
-    p = p + term;
-    i = i + 1;
+      polySysStr = polySysStr | currentLine;
   );
-  print("halfway===============");
-  i = i + 1;
-  term = value L_i;
-  p = p + term;
-  result = result | {p};
-  --i = i + 1;
-  print(result);
-  print(L_i);
-  while L_i != "THe GeNeRATING SOLUTiiONS :" do(
-    p = 0;
-    while L_i != ";" do(
-      if L_i == "THe GeNeRATING SOLUTiiONS :" then(
-        break;
-      );
-      term = value L_i;
-      p = p + term;
-      i = i + 1;
-    );
-    result = result | {p};
-    i = i + 1;
-    if L_i == "" then(
-      break;
-    );
-    print(result);
-  );
-  print("done");
 
-  result
+  polySysStr = polySysStr | "}";
+  polySystem = value polySysStr
+  polySystem
 )
 
 newParseSolutions = method()
@@ -1280,7 +1231,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   if(methodOption == 3) then(
     print("Before calling newstartSystemFromFile");
-    -- p = newstartSystemFromFile2(startfile);
+    p = symStartSysFromFile(startfile);
     print("After calling newstartSystemFromFile");
 
     -- test := get startfile;
