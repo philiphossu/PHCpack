@@ -1093,7 +1093,7 @@ newParseSolutions (String) := (outFileName) -> (
     );
     -- Check for if the solution failed and must be disregarded
     print(L_i);
-    if(substring(64,11,L_i) != "success") and (substring(65,11,L_i) != "success") and (substring(66,11,L_i) != "success") and (substring(67,11,L_i) != "success") and (substring(68,11,L_i) != "success") then(
+    if(substring(64,11,L_i) != "success") and (substring(65,11,L_i) != "success") and (substring(66,11,L_i) != "success") and (substring(67,11,L_i) != "success") and (substring(68,11,L_i) != "success") and (substring(69,11,L_i) != "success") then(
       ignoreSolFlag = 1;
       print("Solution is bad. Should be ignored.");
     )
@@ -1183,19 +1183,10 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     -- startSysSolns: solutions to the start system
     -- numStartSysSolns: number of solutions to the start system
 
-  -- To Do:
-    -- 1. (DONE) Add argument options for which method you desire
-      -- ex. (List,ZZ) := (system,optionIndex) -> ();
-    -- 2. (IN PROGRESS) Mimic mixedVolume to optionally return the start system (p) since function currently returns nothing
-      -- Also return the number of solutions to the start system since this is the same as = of solns to target system
-      -- (need to record this in final results)
-    -- 3. (IN PROGRESS) Test to ensure it work
-
-    -- Note for 7/26:
-      -- Need to determine how to write start SYSTEM vs start SYSTEM SOLUTIONS in my different cases
-      -- This needs to be fixed before the output triple can be formed
-      -- I'm currently getting problems in option 0 and option 3, likely due to how I write the start sys and start sys solns to the same file
-      -- There must be some way to fix this...
+    -- Dec 2017 / Jan 2018 To Do:
+      -- Input system to PHCpack which generates a lifting. Read this lifting from ??? file and quit PHCpack.
+      -- Sink all fixed points in the lifting to a -1 value.
+      -- Feed the system back into PHCpack with your modified lifting and process results as before.
 
     -- Note: In FindSymmetries.m2, I had to modify line 1 for this load to work. New line 1: load "./SymmetricGroupUtils.m2"
 
@@ -1231,20 +1222,21 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   -- Then, all subsequent commands must be written into the cmdfile
 
   -- methodSelector := 3;
-  groupSelector := 1;
+  groupSelector := 0;
 
   -- Writing & Setup: PHCcommands file
   file := openOut cmdfile;
 
   if(methodOption == 3) then (
   -- Menu for lifting strategies
-  file << "3" <<endl;
+  file << "3" << endl;
   if(groupSelector == 0) then(
   -- Option for full permutation group
   file << "n" << endl;
   -- Data for number of generating elements
   file << #symGroupGens << endl;
   -- Data for n vector representations of generating elements
+  print("what is going on");
   for a in symGroupGens do(
     -- print(a);
     for b in a do(
@@ -1257,8 +1249,8 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   else(
     file << "y" << endl;
   );
-  -- Option for generation of the group
-  file << "n" << endl;
+  -- Option for generation of the group (Update this to yes, Nov 2017)
+  file << "y" << endl;
   -- Option for sign symmetry to be taken into account
   file << "n" << endl;
   -- Option for already having a mixed subdivision
@@ -1267,6 +1259,9 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   file << "n" << endl;
   -- Option for having the subdivision on a separate file
   file << "n" << endl;
+
+  -- PHC outputs the liftings on screen which we need at this point
+
   -- Menu for lifting orbits
   file << "1" << endl;
   -- Data for lower bound for random lifting
@@ -1275,7 +1270,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   file << "100" << endl;
   -- Menu for symmetric polyhedral continuation
   file << "2" << endl;
-  -- Data for string of characters to write the start solutions on (OPTION 2 CAUSES PROBLEMS)
+  -- Data for string of characters to write the start solutions on
   file << startfile << endl;
 
   );
@@ -1359,7 +1354,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   if(methodOption == 3) then(
     print("Before calling newstartSystemFromFile");
-    p = newstartSystemFromFile2(startfile);
+    -- p = newstartSystemFromFile2(startfile);
     print("After calling newstartSystemFromFile");
 
     -- test := get startfile;
@@ -1380,7 +1375,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
     numStartSysSolns = #sols;
 
-    result = (p, sols, numStartSysSolns);
+    -- result = (p, sols, numStartSysSolns);
 
   );
 
@@ -1391,7 +1386,8 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     if ret =!= 0 then
       error "Error occurred while executing PHCpack command: phc -m";
     -- print("Before");
-    sols = parseSolutions(solsfile, ring ideal system);
+    -- sols = parseSolutions(solsfile, ring ideal system);
+    sols = newParseSolutions(outfile);
     -- print("After");
     -- numStartSysSolns holds the number of start system solutions for output
     numStartSysSolns = #sols;
