@@ -72,6 +72,7 @@ export {
   "loadSettingsPath",
   "mixedVolume",
   "mixedVolumeSymmetryTest",
+  "symStartSysFromFile",
   "nonZeroFilter",
   "numericalIrreducibleDecomposition",
   "numThreads",
@@ -895,12 +896,11 @@ symStartSysFromFile = method() --TypicalValue => List
 symStartSysFromFile (String, List) := (startFileName, system) -> (
   -- IN: file name, target system
   -- OUT: list of polynomials in a ring with coefficients in CC
-
   -- R := CC[k,l,m,n]
-  R := ring(ideal(system));
-  s := get "testfile";
-  currentLine := "";
 
+  R := ring(ideal(system));
+  s := get startFileName;
+  currentLine := "";
   polySysStr := "{";
   for line in lines(s) do (
       if line == "THE GENERATING SOLUTIONS :" then
@@ -910,14 +910,13 @@ symStartSysFromFile (String, List) := (startFileName, system) -> (
       currentLine = replace("E", "e", currentLine);
       currentLine = replace("e\\+00", "", currentLine);
       currentLine = replace(";", ",", currentLine);
-
       polySysStr = polySysStr | currentLine;
   );
-
   polySysStr = polySysStr | "}";
-  polySystem = value polySysStr;
-  polySystem;
+  polySys := value polySysStr;
+  return polySys;
 )
+
 
 newParseSolutions = method()
 newParseSolutions (String) := (outFileName) -> (
