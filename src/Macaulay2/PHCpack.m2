@@ -960,12 +960,15 @@ newParseSolutions (String) := (outFileName) -> (
     i = i + 1; -- Want to move one past "the solution" line
     -- Now at the position where the solution should be added
     while((separate(" ",L#i))#0 != "==") do(
-      currentLine = replace("E","e",currentLine);
+      currentLine = replace("E","e",L#i);
       currentLine = replace("e\\+00","",currentLine);
       currentLine = replace("  "," ",currentLine);
-      tempSol = append(tempSol, value(currentLine));
+      currentLine = replace("   "," ",currentLine);
+      -- print(currentLine);
+      tempSol = append(tempSol, value(((separate(" ", currentLine))#3)|"+"|((separate(" ", currentLine))#4)|"*ii"));
       i = i + 1;
     );
+    i = i + 1;
     -- Need to add the tempSol list as a point to the final solutions
     solutions = append(solutions, point{tempSol});
   );
@@ -1175,10 +1178,10 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     --   print(a);
     -- );
 
-    -- execstr = PHCexe|" -z "|startfile|" "|solsfile;
-    -- ret = run(execstr);
-    -- if ret =!= 0 then
-    --   error "Error occurred while executing PHCpack command: phc -m";
+    execstr = PHCexe|" -z "|startfile|" "|solsfile;
+    ret = run(execstr);
+    if ret =!= 0 then
+       error "Error occurred while executing PHCpack command: phc -m";
 
     sols = newParseSolutions(outfile);
     -- sols = parseSolutions(solsfile, ring ideal system);
