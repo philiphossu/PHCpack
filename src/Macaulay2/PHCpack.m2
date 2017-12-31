@@ -924,16 +924,14 @@ newParseSolutions (String) := (outFileName) -> (
   -- IN:  the name of the output file for symmetric lifting (PHC option 3)
   -- OUT: List of solutions found on the output file
 
+  tempSol := {};
   solutions := {};
   s := get outFileName;
 
   L := lines(s);
   -- n := #L;
   i := 0;
-  templist1 := {};
-  failedSol := 0;
-  -- local p;
-  -- Flag will be = 1 if "A list of " is found using substring
+  currentLine := "";
 
   -- While THE SOLUTIONS has not appeared in the file, move to the next line
   while L_i != "THE SOLUTIONS :" do(
@@ -948,17 +946,28 @@ newParseSolutions (String) := (outFileName) -> (
 
   -- Made it to the first set of solutions. Now, need to check if it's a success or failure/infinity...
   if((separate(" ",L#i))#-1 != "success") then(
-    -- The solution should be ignored, either failure or infinity
+    -- The solution should be ignored, either failure or infinity. Move onto the next solution
     while((separate(" ",L#i))#0 != "==") do(
       i = i + 1;
     );
+    i = i + 1; -- Want to move one extra line past the "== err" line
   )
   else(
     -- The solution was valid and should be recorded
     while((separate(" ",L#i))#0 != "the") do(
       i = i + 1;
     );
+    i = i + 1; -- Want to move one past "the solution" line
     -- Now at the position where the solution should be added
+    while((separate(" ",L#i))#0 != "==") do(
+      currentLine = replace("E","e",currentLine);
+      currentLine = replace("e\\+00","",currentLine);
+      currentLine = replace("  "," ",currentLine);
+      tempSol = append(tempSol, value(currentLine));
+      i = i + 1;
+    );
+    -- Need to add the tempSol list as a point to the final solutions
+    solutions = append(solutions, point{tempSol});
   );
 
   if(#solutions == 0) then(
