@@ -929,7 +929,6 @@ newParseSolutions (String) := (outFileName) -> (
   s := get outFileName;
 
   L := lines(s);
-  -- n := #L;
   i := 0;
   currentLine := "";
 
@@ -943,36 +942,36 @@ newParseSolutions (String) := (outFileName) -> (
   while substring(0,9,L_i) != "solution " do(
     i = i + 1;
   );
-
-  -- Made it to the first set of solutions. Now, need to check if it's a success or failure/infinity...
-  if((separate(" ",L#i))#-1 != "success") then(
-    -- The solution should be ignored, either failure or infinity. Move onto the next solution
-    while((separate(" ",L#i))#0 != "==") do(
+  while(i < #L) do(
+    -- Made it to the first set of solutions. Now, need to check if it's a success or failure/infinity...
+    if((separate(" ",L#i))#-1 != "success") then(
+      -- The solution should be ignored, either failure or infinity. Move onto the next solution
+      while((separate(" ",L#i))#0 != "==") do(
+        i = i + 1;
+      );
+      i = i + 1; -- Want to move one extra line past the "== err" line
+    )
+    else(
+      -- The solution was valid and should be recorded
+      while((separate(" ",L#i))#0 != "the") do(
+        i = i + 1;
+      );
+      i = i + 1; -- Want to move one past "the solution" line
+      -- Now at the position where the solution should be added
+      while((separate(" ",L#i))#0 != "==") do(
+        currentLine = replace("E","e",L#i);
+        currentLine = replace("e\\+00","",currentLine);
+        currentLine = replace("  "," ",currentLine);
+        currentLine = replace("   "," ",currentLine);
+        -- print(currentLine);
+        tempSol = append(tempSol, value(((separate(" ", currentLine))#3)|"+"|((separate(" ", currentLine))#4)|"*ii"));
+        i = i + 1;
+      );
       i = i + 1;
+      -- Need to add the tempSol list as a point to the final solutions
+      solutions = append(solutions, point{tempSol});
     );
-    i = i + 1; -- Want to move one extra line past the "== err" line
-  )
-  else(
-    -- The solution was valid and should be recorded
-    while((separate(" ",L#i))#0 != "the") do(
-      i = i + 1;
-    );
-    i = i + 1; -- Want to move one past "the solution" line
-    -- Now at the position where the solution should be added
-    while((separate(" ",L#i))#0 != "==") do(
-      currentLine = replace("E","e",L#i);
-      currentLine = replace("e\\+00","",currentLine);
-      currentLine = replace("  "," ",currentLine);
-      currentLine = replace("   "," ",currentLine);
-      -- print(currentLine);
-      tempSol = append(tempSol, value(((separate(" ", currentLine))#3)|"+"|((separate(" ", currentLine))#4)|"*ii"));
-      i = i + 1;
-    );
-    i = i + 1;
-    -- Need to add the tempSol list as a point to the final solutions
-    solutions = append(solutions, point{tempSol});
   );
-
   if(#solutions == 0) then(
     print("========== No Solutions Located ==========");
   );
@@ -1074,6 +1073,28 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   file << "n" << endl;
 
   -- PHC outputs the liftings on screen which we need at this point
+  execstr := PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
+  ret := run(execstr);
+  sesOpen := get sesfile;
+  -- Need to sift through the session file and obtain a list of the liftings (and know their corresponding points)
+  -- The supports are in order of how the equations were entered
+  -- The terms in each equation are in sorted order
+  L := line(sesOpen);
+  i := 0;
+  liftings := {};
+
+  while((separate(" ",L#i))#0 != "support") do(
+    i = i + 1;
+  );
+  i = i + 1; -- Move one past the "support" line
+
+  while((separate(" ",L#i))#0 != "support") do(
+    -- Record each lifting for each support
+    liftings = append(liftings, (separate(" ",L#i))#-1); -- This is the lifting for ??? monomial (Best way to determine their sorted order?)
+  );
+
+  -- Need to reset the files before re-writing
+  -- Need to paste in the original options for this re-writing of the file
 
   -- Menu for lifting orbits
   file << "1" << endl;
