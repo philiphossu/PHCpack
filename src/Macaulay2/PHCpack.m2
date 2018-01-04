@@ -1013,13 +1013,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   -- ========================================================================
 
-  R := ring(ideal(system));
-  vars := gens(R);
-  -- vars_0 is variable 1 in the system, vars_1 is variable 2, etc.
-  N := #system;
-  symGroupGens := findSymmetry(ideal(system));
-  local result;
-
   -- Checking input system and adding a fixed point to every equation if not already present
   system = new List from (for poly in system list (
     if not any(listForm poly, (support, coeff) -> (all(support, (exponent) -> (exponent == 0)))) then
@@ -1028,6 +1021,13 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
       poly
     )
   );
+
+  R := ring(ideal(system));
+  vars := gens(R);
+  -- vars_0 is variable 1 in the system, vars_1 is variable 2, etc.
+  N := #system;
+  symGroupGens := findSymmetry(ideal(system));
+  local result;
 
   -- Pre-checks to see if phc -m should be called
   if N < numgens R then
@@ -1093,26 +1093,39 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   -- PHC outputs the liftings on screen which we need at this point
   execstr := PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
   ret := run(execstr);
-  sesOpen := get sesfile;
-  -- Need to sift through the session file and obtain a list of the liftings (and know their corresponding points)
-  -- The supports are in order of how the equations were entered
-  -- The terms in each equation are in sorted order
-  L := line(sesOpen);
+
+  L := lines(get sesfile);
   i := 0;
-  liftings := {};
+  liftings := new MutableList from {};
+  atEndOfLiftings = false;
 
   while((separate(" ",L#i))#0 != "support") do(
     i = i + 1;
   );
   i = i + 1; -- Move one past the "support" line
 
-  while((separate(" ",L#i))#0 != "support") do(
-    -- Record each lifting for each support
-    liftings = append(liftings, (separate(" ",L#i))#-1); -- This is the lifting for ??? monomial (Best way to determine their sorted order?)
+  while(i < #L) do (
+    while((separate(" ",L#i))#0 != "support") do (
+      tempLifting := new MutableList from {};
+      if(L#i == "") then (
+        atEndOfLiftings = true;
+        break;
+      );
+      -- Record each lifting for each support
+      tempLifting = append(tempLifting, (separate(" ",L#i))#-1); -- This is the lifting for ??? monomial (Best way to determine their sorted order?)
+      i = i + 1;
+    );
+    i = i + 1;
+    liftings = append(liftings, tempLifting);
+    if (atEndOfLiftings) then (
+      break;
+    );
   );
 
-  -- Need to reset the files before re-writing
-  -- Need to paste in the original options for this re-writing of the file
+  for eqn in liftings do (
+    -- print(eqn#-1); -- For the fixed point lifting
+    eqn#-1 = -2;
+  );
 
   *}
 
