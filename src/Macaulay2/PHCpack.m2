@@ -1020,6 +1020,15 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   symGroupGens := findSymmetry(ideal(system));
   local result;
 
+  -- Checking input system and adding a fixed point to every equation if not already present
+  system = new List from (for poly in system list (
+    if not any(listForm poly, (support, coeff) -> (all(support, (exponent) -> (exponent == 0)))) then
+      poly - 1
+    else
+      poly
+    )
+  );
+
   -- Pre-checks to see if phc -m should be called
   if N < numgens R then
     error "The system is underdetermined";
