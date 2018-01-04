@@ -1045,14 +1045,13 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   cmdfile := filename|"PHCcommands";
   sesfile := filename|"PHCsession";
   startfile := filename|"PHCstart";
-  -- startSolnsFile := filename|"PHCstartSolns";
   solsfile := startfile|".sols";
 
   -- First, the number of equations (N) and the equations themselves must be written to the input file
   -- Then, all subsequent commands must be written into the cmdfile
 
-  -- methodSelector := 3;
-  groupSelector := 0;
+  -- Q: How to detect if full symmetry group is present? Option is currently hard coded.
+  isFullPermGroup := false;
 
   -- Writing & Setup: PHCcommands file
   file := openOut cmdfile;
@@ -1060,26 +1059,25 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   if(methodOption == 3) then (
   -- Menu for lifting strategies
   file << "3" << endl;
-  if(groupSelector == 0) then(
-  -- Option for full permutation group
-  file << "n" << endl;
-  -- Data for number of generating elements
-  file << #symGroupGens << endl;
-  -- Data for n vector representations of generating elements
-  print("what is going on");
-  for a in symGroupGens do(
-    -- print(a);
-    for b in a do(
-      print(vars_b);
-      file << (vars_b) << endl;
-      -- These are the variables which need to be written to the file for the symmetry
+  if(not isFullPermGroup) then(
+    -- Option for full permutation group
+    file << "n" << endl;
+    -- Data for number of generating elements
+    file << #symGroupGens << endl;
+    -- Data for n vector representations of generating elements
+    for a in symGroupGens do(
+      -- print(a);
+      for b in a do(
+        print(vars_b);
+        file << (vars_b) << endl;
+        -- These are the variables which need to be written to the file for the symmetry
+      );
     );
-  );
   )
   else(
     file << "y" << endl;
   );
-  -- Option for generation of the group (Update this to yes, Nov 2017)
+  -- Option for generation of the group -- Should be yes unless full permutation group is present, refer to Q on line 1053
   file << "y" << endl;
   -- Option for sign symmetry to be taken into account
   file << "n" << endl;
@@ -1212,9 +1210,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     print("Before calling newstartSystemFromFile");
     p = symStartSysFromFile(startfile, system);
     print("After calling newstartSystemFromFile");
-
-    -- test := get startfile;
-    -- test = replace("THE GENERATING SOLUTIONS :\n","\nTHE SOLUTIONS :",test);
 
     -- L := lines(test);
     -- for a in L do(
