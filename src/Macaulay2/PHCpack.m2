@@ -1088,9 +1088,15 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   -- Option for having the subdivision on a separate file
   file << "n" << endl;
 
+  close file;
+
   {*
 
   -- PHC outputs the liftings on screen which we need at this point
+
+  -- Writing & Setup: PHCinput file
+  systemToFile(system,infile);
+
   execstr := PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
   ret := run(execstr);
 
@@ -1126,6 +1132,18 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     -- print(eqn#-1); -- For the fixed point lifting
     eqn#-1 = -2;
   );
+
+  -- Need to re-generate the files and re-write for PHC run # 2 with "manual" liftings
+
+  -- infile := filename|"PHCinput"; -- Doesn't need to be written a second time, already have the system in the infile
+  outfile := filename|"PHCoutput";
+  cmdfile := filename|"PHCcommands";
+  sesfile := filename|"PHCsession";
+  startfile := filename|"PHCstart";
+  solsfile := startfile|".sols";
+
+  -- Writing & Setup: PHCcommands file
+  file := openOut cmdfile;
 
   *}
 
@@ -1189,8 +1207,9 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   close file;
 
+  -- Don't need this a second time, already wrote the infile with the system
   -- Writing & Setup: PHCinput file
-  systemToFile(system,infile);
+  -- systemToFile(system,infile);
 
   -- Execution
   execstr := PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
