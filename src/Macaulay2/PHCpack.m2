@@ -896,9 +896,8 @@ symStartSysFromFile = method() --TypicalValue => List
 symStartSysFromFile (String, List) := (startFileName, system) -> (
   -- IN: file name, target system
   -- OUT: list of polynomials in a ring with coefficients in CC
-  -- R := CC[k,l,m,n]
 
-  R := ring(ideal(system)); -- Do you actually need this?
+  R := ring(ideal(system));
   s := get startFileName;
   currentLine := "";
   polySysStr := "{";
@@ -923,11 +922,9 @@ newParseSolutions (String) := (outFileName) -> (
   -- parses solutions in PHCpack format
   -- IN:  the name of the output file for symmetric lifting (PHC option 3)
   -- OUT: List of solutions found on the output file
-
   tempSol := {};
   solutions := {};
   s := get outFileName;
-
   L := lines(s);
   i := 0;
   currentLine := "";
@@ -937,17 +934,20 @@ newParseSolutions (String) := (outFileName) -> (
     i = i + 1;
   );
   -- print("Found THE SOLUTIONS on line: ",i);
-
   -- Once the solutions section of the file has been found, navigate to them
   while substring(0,9,L_i) != "solution " do(
     i = i + 1;
   );
+
   while(i < #L) do(
-    -- Made it to the first set of solutions. Now, need to check if it's a success or failure/infinity...
+    -- Made it to the set of solutions. Now, need to check if it's a success or failure/infinity...
     if((separate(" ",L#i))#-1 != "success") then(
       -- The solution should be ignored, either failure or infinity. Move onto the next solution
       while((separate(" ",L#i))#0 != "==") do(
         i = i + 1;
+        if(i > #L-1) then(
+          break;
+        );
       );
       i = i + 1; -- Want to move one extra line past the "== err" line
     )
@@ -955,23 +955,30 @@ newParseSolutions (String) := (outFileName) -> (
       -- The solution was valid and should be recorded
       while((separate(" ",L#i))#0 != "the") do(
         i = i + 1;
+        if(i > #L-1) then(
+          break;
+        );
       );
       i = i + 1; -- Want to move one past "the solution" line
       -- Now at the position where the solution should be added
+      tempSol = {};
       while((separate(" ",L#i))#0 != "==") do(
         currentLine = replace("E","e",L#i);
         currentLine = replace("e\\+00","",currentLine);
-        currentLine = replace("  "," ",currentLine);
         currentLine = replace("   "," ",currentLine);
-        -- print(currentLine);
+        currentLine = replace("  "," ",currentLine);
         tempSol = append(tempSol, value(((separate(" ", currentLine))#3)|"+"|((separate(" ", currentLine))#4)|"*ii"));
         i = i + 1;
+        if(i > #L-1) then(
+          break;
+        );
       );
       i = i + 1;
       -- Need to add the tempSol list as a point to the final solutions
       solutions = append(solutions, point{tempSol});
     );
   );
+
   if(#solutions == 0) then(
     print("========== No Solutions Located ==========");
   );
@@ -984,6 +991,8 @@ newParseSolutions (String) := (outFileName) -> (
 
 load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/IdealSymmetries/FindSymmetries.m2";
 --load "/Users/philiphossu/Desktop/Research/2017-Summer/Workshop-2016-Warwick/IdealSymmetries/experiments.m2";
+needsPackage "NAGtypes"
+
 
 mixedVolumeSymmetryTest = method()
 mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
@@ -1072,6 +1081,8 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   -- Option for having the subdivision on a separate file
   file << "n" << endl;
 
+  {*
+
   -- PHC outputs the liftings on screen which we need at this point
   execstr := PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
   ret := run(execstr);
@@ -1095,6 +1106,8 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   -- Need to reset the files before re-writing
   -- Need to paste in the original options for this re-writing of the file
+
+  *}
 
   -- Menu for lifting orbits
   file << "1" << endl;
@@ -1209,7 +1222,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
     numStartSysSolns = #sols;
 
-    -- result = (p, sols, numStartSysSolns);
+    result = (p, sols, numStartSysSolns);
 
   );
 
