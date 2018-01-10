@@ -1123,8 +1123,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
       isFixedPoint; -- To prevent warning
       if(not liftings#?(currentLine#-1)) then (
         -- Unregistered orbit, random lifting must be generated and added to HashTable
-        print("New Orbit Detected"); -- Accessed correct number of times
-        print(currentLine);
         isFixedPoint = true;
         a := 0;
         while(a < (#currentLine)-1) do(
@@ -1134,16 +1132,10 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
           );
           a = a + 1;
         );
-        if(isFixedPoint) then(
-          print("New Orbit IS for fixed point");
-        )
-        else(
-          print("New Orbit IS NOT for fixed point");
-        );
         lifting; -- To prevent warning
         if(isFixedPoint) then (
           -- Generate a unique and random negative lifting for the orbit
-          lifting = -(random(1,200)); -- Selecting random bounds?
+          lifting = -(random(1,200));
           while(member(lifting,values(liftings))) do(
             lifting = -(random(1,200));
           );
@@ -1151,7 +1143,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
         )
         else(
           -- Generate a unique and random positive lifting for the orbit
-          lifting = random(1,200); -- Selecting random bounds?
+          lifting = random(1,200);
           while(member(lifting,values(liftings))) do(
             lifting = random(1,200);
           );
