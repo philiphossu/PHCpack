@@ -1206,11 +1206,11 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   *}
 
   -- Menu for lifting orbits
-  file << "1" << endl;
-  -- Data for lower bound for random lifting
-  file << "-100" << endl;
-  -- Data for upper bound for random lifting
-  file << "100" << endl;
+  file << "2" << endl;
+  -- Integers for orbit lifting, integers on separate lines (?)
+  for a in values(liftings) do(
+    file << a << endl;
+  );
   -- Menu for symmetric polyhedral continuation
   file << "2" << endl;
   -- Data for string of characters to write the start solutions on
