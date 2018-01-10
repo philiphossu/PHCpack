@@ -1061,7 +1061,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     file << #symGroupGens << endl;
     -- Data for n vector representations of generating elements
     for a in symGroupGens do(
-      -- print(a);
       for b in a do(
         print(vars_b);
         file << (vars_b) << endl;
@@ -1072,7 +1071,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   else(
     file << "y" << endl;
   );
-  -- Option for generation of the group -- Should be yes unless full permutation group is present, refer to Q on line 1053
+  -- Option for generation of the group -- Should be yes unless full permutation group is present
   file << "y" << endl;
   -- Option for sign symmetry to be taken into account
   file << "n" << endl;
@@ -1085,8 +1084,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   close file;
 
-  {*
-
   -- PHC outputs the liftings on screen which we need at this point, can end first processing run
 
   -- Writing & Setup: PHCinput file
@@ -1098,7 +1095,8 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   L := lines(get sesfile);
   i := 0;
   liftings := new MutableHashTable from {};
-  atEndOfLiftings = false;
+  atEndOfLiftings := false;
+  currentLine := "";
 
   -- Search for "support" in the session file
   while((separate(" ",L#i))#0 != "support") do(
@@ -1115,7 +1113,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
       );
       currentLine = delete("",separate(" ",L#i)); -- Remove the first space from the list
       -- Record each lifting for each support
-      isFixedPoint; -- To prevent warning
+      local isFixedPoint; -- To prevent warning
       if(not liftings#?(currentLine#-1)) then (
         -- Unregistered orbit, random lifting must be generated and added to HashTable
         isFixedPoint = true;
@@ -1127,7 +1125,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
           );
           a = a + 1;
         );
-        lifting; -- To prevent warning
+        local lifting; -- To prevent warning
         if(isFixedPoint) then (
           -- Generate a unique and random negative lifting for the orbit
           lifting = -(random(1,200));
@@ -1154,16 +1152,17 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     );
   );
 
+  -- Now we have all the random liftings in values(liftings)
   -- Need to re-generate the files and re-write for PHC run # 2 with "manual" liftings
 
-  outfile := filename|"PHCoutput";
-  cmdfile := filename|"PHCcommands";
-  sesfile := filename|"PHCsession";
-  startfile := filename|"PHCstart";
-  solsfile := startfile|".sols";
+  outfile = filename|"PHCoutput";
+  cmdfile = filename|"PHCcommands";
+  sesfile = filename|"PHCsession";
+  startfile = filename|"PHCstart";
+  solsfile = startfile|".sols";
 
   -- Writing & Setup: PHCcommands file
-  file := openOut cmdfile;
+  file = openOut cmdfile;
 
   -- Menu for lifting strategies
   file << "3" << endl;
@@ -1174,7 +1173,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     file << #symGroupGens << endl;
     -- Data for n vector representations of generating elements
     for a in symGroupGens do(
-      -- print(a);
       for b in a do(
         print(vars_b);
         file << (vars_b) << endl;
@@ -1185,7 +1183,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   else(
     file << "y" << endl;
   );
-  -- Option for generation of the group -- Should be yes unless full permutation group is present, refer to Q on line 1053
+  -- Option for generation of the group -- Should be yes unless full permutation group is present
   file << "y" << endl;
   -- Option for sign symmetry to be taken into account
   file << "n" << endl;
@@ -1195,8 +1193,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   file << "n" << endl;
   -- Option for having the subdivision on a separate file
   file << "n" << endl;
-
-  *}
 
   -- Menu for lifting orbits
   file << "2" << endl;
@@ -1212,26 +1208,26 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
   );
 
   if(methodOption == 0) then(
-  -- Menu for lifting strategies
-  file << "0" << endl;
-  -- Option for having a mixed subdivision
-  file << "n" << endl;
-  -- Option for enforcing a type mixture
-  file << "n" << endl;
-  -- Menu for removing non-contributing points
-  file << "0" << endl;
-  -- Menu for lifting functions
-  file << "0" << endl;
-  -- Option for changing default floating point to integer
-  file << "n" << endl;
-  -- Option for changing current lower + upper bounds on lifting values
-  file << "n" << endl;
-  -- Option for having mixed cells on a separate file
-  file << "n" << endl;
-  -- Menu for polyhedral continuation
-  file << "1" << endl;
-  -- Data for string of characters to write start solutions on
-  file << startfile << endl;
+    -- Menu for lifting strategies
+    file << "0" << endl;
+    -- Option for having a mixed subdivision
+    file << "n" << endl;
+    -- Option for enforcing a type mixture
+    file << "n" << endl;
+    -- Menu for removing non-contributing points
+    file << "0" << endl;
+    -- Menu for lifting functions
+    file << "0" << endl;
+    -- Option for changing default floating point to integer
+    file << "n" << endl;
+    -- Option for changing current lower + upper bounds on lifting values
+    file << "n" << endl;
+    -- Option for having mixed cells on a separate file
+    file << "n" << endl;
+    -- Menu for polyhedral continuation
+    file << "1" << endl;
+    -- Data for string of characters to write start solutions on
+    file << startfile << endl;
 
   );
 
@@ -1258,16 +1254,16 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   close file;
 
-  -- Execution
-  execstr := PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
-  ret := run(execstr);
+  -- Second execution of PHC -m
+  execstr = PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
+  ret = run(execstr);
   if ret =!= 0 then
     error "Error occurred while executing PHCpack command: phc -m";
   F := get outfile;
 
-  p;
-  sols;
-  numStartSysSolns;
+  local p;
+  local sols;
+  local numStartSysSolns;
 
   if(methodOption == 4) then (
     p = startSystemFromFile(startfile);
@@ -1282,7 +1278,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   );
 
-  if(methodOption == 3) then(
+  if(methodOption == 3) then (
     print("Before calling newstartSystemFromFile");
     p = symStartSysFromFile(startfile, system);
     print("After calling newstartSystemFromFile");
@@ -1299,14 +1295,12 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
     sols = newParseSolutions(outfile);
     -- sols = parseSolutions(solsfile, ring ideal system);
-
     numStartSysSolns = #sols;
-
     result = (p, sols, numStartSysSolns);
 
   );
 
-  if(methodOption == 0) then(
+  if(methodOption == 0) then (
     p = startSystemFromFile(startfile);
     execstr = PHCexe|" -z "|startfile|" "|solsfile;
     ret = run(execstr);
@@ -1317,7 +1311,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     -- numStartSysSolns holds the number of start system solutions for output
     numStartSysSolns = #sols;
     -- result = (p);
-
     result = (p, sols, numStartSysSolns);
   );
 
