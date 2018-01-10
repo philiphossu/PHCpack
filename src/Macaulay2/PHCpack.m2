@@ -1092,7 +1092,7 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   {*
 
-  -- PHC outputs the liftings on screen which we need at this point
+  -- PHC outputs the liftings on screen which we need at this point, can end first processing run
 
   -- Writing & Setup: PHCinput file
   systemToFile(system,infile);
@@ -1102,9 +1102,10 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   L := lines(get sesfile);
   i := 0;
-  liftings := new MutableList from {};
+  liftings := new MutableHashTable from {};
   atEndOfLiftings = false;
 
+  -- Search for "support" in the session file
   while((separate(" ",L#i))#0 != "support") do(
     i = i + 1;
   );
@@ -1112,30 +1113,64 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   while(i < #L) do (
     while((separate(" ",L#i))#0 != "support") do (
-      tempLifting := new MutableList from {};
       if(L#i == "") then (
         atEndOfLiftings = true;
+        -- Breaking out of the inner loop, relevant part of the session file has ended
         break;
       );
+      currentLine = delete("",separate(" ",L#i)); -- Remove the first space from the list
       -- Record each lifting for each support
-      tempLifting = append(tempLifting, (separate(" ",L#i))#-1); -- This is the lifting for ??? monomial (Best way to determine their sorted order?)
+      isFixedPoint; -- To prevent warning
+      if(not liftings#?(currentLine#-1)) then (
+        -- Unregistered orbit, random lifting must be generated and added to HashTable
+        print("New Orbit Detected"); -- Accessed correct number of times
+        print(currentLine);
+        isFixedPoint = true;
+        a := 0;
+        while(a < (#currentLine)-1) do(
+          if(currentLine#a != "0") then (
+            isFixedPoint = false;
+            break;
+          );
+          a = a + 1;
+        );
+        if(isFixedPoint) then(
+          print("New Orbit IS for fixed point");
+        )
+        else(
+          print("New Orbit IS NOT for fixed point");
+        );
+        lifting; -- To prevent warning
+        if(isFixedPoint) then (
+          -- Generate a unique and random negative lifting for the orbit
+          lifting = -(random(1,200)); -- Selecting random bounds?
+          while(member(lifting,values(liftings))) do(
+            lifting = -(random(1,200));
+          );
+          liftings#(currentLine#-1) = lifting;
+        )
+        else(
+          -- Generate a unique and random positive lifting for the orbit
+          lifting = random(1,200); -- Selecting random bounds?
+          while(member(lifting,values(liftings))) do(
+            lifting = random(1,200);
+          );
+          liftings#(currentLine#-1) = lifting;
+        );
+      );
       i = i + 1;
     );
     i = i + 1;
-    liftings = append(liftings, tempLifting);
-    if (atEndOfLiftings) then (
+    if(atEndOfLiftings) then (
+      -- Need to break out of the outer loop as well
       break;
     );
   );
 
-  for eqn in liftings do (
-    -- print(eqn#-1); -- For the fixed point lifting
-    eqn#-1 = -2;
-  );
+  values(liftings); -- Contains the liftings for the orbits in order
 
   -- Need to re-generate the files and re-write for PHC run # 2 with "manual" liftings
 
-  -- infile := filename|"PHCinput"; -- Doesn't need to be written a second time, already have the system in the infile
   outfile := filename|"PHCoutput";
   cmdfile := filename|"PHCcommands";
   sesfile := filename|"PHCsession";
@@ -1144,6 +1179,37 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   -- Writing & Setup: PHCcommands file
   file := openOut cmdfile;
+
+  -- Menu for lifting strategies
+  file << "3" << endl;
+  if(not isFullPermGroup) then(
+    -- Option for full permutation group
+    file << "n" << endl;
+    -- Data for number of generating elements
+    file << #symGroupGens << endl;
+    -- Data for n vector representations of generating elements
+    for a in symGroupGens do(
+      -- print(a);
+      for b in a do(
+        print(vars_b);
+        file << (vars_b) << endl;
+        -- These are the variables which need to be written to the file for the symmetry
+      );
+    );
+  )
+  else(
+    file << "y" << endl;
+  );
+  -- Option for generation of the group -- Should be yes unless full permutation group is present, refer to Q on line 1053
+  file << "y" << endl;
+  -- Option for sign symmetry to be taken into account
+  file << "n" << endl;
+  -- Option for already having a mixed subdivision
+  file << "n" << endl;
+  -- Option for enforcing the type mixture
+  file << "n" << endl;
+  -- Option for having the subdivision on a separate file
+  file << "n" << endl;
 
   *}
 
