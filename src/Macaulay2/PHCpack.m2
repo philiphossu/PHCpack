@@ -1004,11 +1004,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     -- startSysSolns: solutions to the start system
     -- numStartSysSolns: number of solutions to the start system
 
-    -- Dec 2017 / Jan 2018 To Do:
-      -- Input system to PHCpack which generates a lifting. Read this lifting from ??? file and quit PHCpack.
-      -- Sink all fixed points in the lifting to a -1 value.
-      -- Feed the system back into PHCpack with your modified lifting and process results as before.
-
     -- Note: In FindSymmetries.m2, I had to modify line 1 for this load to work. New line 1: load "./SymmetricGroupUtils.m2"
 
   -- ========================================================================
@@ -1159,8 +1154,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     );
   );
 
-  values(liftings); -- Contains the liftings for the orbits in order
-
   -- Need to re-generate the files and re-write for PHC run # 2 with "manual" liftings
 
   outfile := filename|"PHCoutput";
@@ -1265,10 +1258,6 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
 
   close file;
 
-  -- Don't need this a second time, already wrote the infile with the system
-  -- Writing & Setup: PHCinput file
-  -- systemToFile(system,infile);
-
   -- Execution
   execstr := PHCexe|" -m "|infile|" "|outfile|" < "|cmdfile|" > "|sesfile;
   ret := run(execstr);
@@ -1276,9 +1265,9 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     error "Error occurred while executing PHCpack command: phc -m";
   F := get outfile;
 
-  local p;
-  local sols;
-  local numStartSysSolns;
+  p;
+  sols;
+  numStartSysSolns;
 
   if(methodOption == 4) then (
     p = startSystemFromFile(startfile);
@@ -1286,12 +1275,9 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     ret = run(execstr);
     if ret =!= 0 then
       error "Error occurred while executing PHCpack command: phc -m";
-    -- print("Before");
     sols = parseSolutions(solsfile, ring ideal system);
-    -- print("After");
     -- numStartSysSolns holds the number of start system solutions for output
     numStartSysSolns = #sols;
-    -- result = (p);
     result = (p, sols, numStartSysSolns);
 
   );
@@ -1326,10 +1312,8 @@ mixedVolumeSymmetryTest (List,ZZ) := (system,methodOption) -> (
     ret = run(execstr);
     if ret =!= 0 then
       error "Error occurred while executing PHCpack command: phc -m";
-    -- print("Before");
     -- sols = parseSolutions(solsfile, ring ideal system);
     sols = newParseSolutions(outfile);
-    -- print("After");
     -- numStartSysSolns holds the number of start system solutions for output
     numStartSysSolns = #sols;
     -- result = (p);
